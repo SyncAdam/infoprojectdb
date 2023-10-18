@@ -1,6 +1,5 @@
 package com.project;
 
-import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -68,7 +67,7 @@ public class ManipMachines {
      * Function that deletes a machine based on its reference number
      * @param ref
      */
-    void deleteMachine(String ref) throws SQLException
+    public void deleteMachine(String ref) throws SQLException
     {
         //disable autocommit to create a statement
         this.myConnection.setAutoCommit(false);
@@ -89,7 +88,7 @@ public class ManipMachines {
     /**
      * Load default dummy machines for testing
      */
-    void loadDefaultMachines() throws SQLException
+    public void loadDefaultMachines() throws SQLException
     {
         try{
             createMachine("F01", "rapide", 20);

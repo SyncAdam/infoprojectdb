@@ -1,17 +1,13 @@
 package com.project;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 public class ManipDB {
     
-        private Connection myConnection;
+        public Connection myConnection;
         public ManipMachines mymanipmachines;
         
         private final String username = "m3_asinkovics01";
