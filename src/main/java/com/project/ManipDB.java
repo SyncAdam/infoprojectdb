@@ -12,6 +12,7 @@ import java.util.List;
 public class ManipDB {
     
         private Connection myConnection;
+        public ManipMachines mymanipmachines;
         
         private final String username = "m3_asinkovics01";
         private final String password = "0ecd918c";
@@ -24,6 +25,7 @@ public class ManipDB {
         {
             try{
                 this.myConnection = establishConnection(host, port, database);
+                this.mymanipmachines = new ManipMachines(myConnection);
                 System.out.println("Connection estabilshed");
             }
             catch(SQLException e)
@@ -57,6 +59,7 @@ public class ManipDB {
                     +   "PUISSANCE DOUBLE NOT NULL, \n"
                     +   ")\n"
                 );
+
                 //create operations table
                 statement.executeUpdate(
                     "CREATE TABLE OPERATIONS (\n"
@@ -65,6 +68,7 @@ public class ManipDB {
                     + "IDPRODUIT INTEGER NOT NULL, \n"
                     + ")\n"
                 );
+
                 //create precedenceoperation table
                   statement.executeUpdate(
                     "CREATE TABLE PRECEDENCEOPERATION (\n"
@@ -72,7 +76,6 @@ public class ManipDB {
                     + "OPAPRES INTEGER NOT NULL, \n"
                     + ")\n"
                 );
-                //create produit table
 
                 //create realise table
                 statement.executeUpdate(
@@ -82,9 +85,11 @@ public class ManipDB {
                     + "DUREE DOUBLE  (\n"
                      + ")\n"
                 );
+
                 //create typeoperation table
                 //...
-
+                //create produit table
+                //...
                 
                 this.myConnection.commit();
             }
