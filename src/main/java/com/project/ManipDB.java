@@ -24,6 +24,7 @@ public class ManipDB {
         {
             try{
                 this.myConnection = establishConnection(host, port, database);
+                System.out.println("Connection estabilshed");
             }
             catch(SQLException e)
             {
@@ -105,5 +106,6 @@ public class ManipDB {
                 }
 
             }
-        }   
+        }
+        
 }
