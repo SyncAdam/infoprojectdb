@@ -53,55 +53,59 @@ public class ManipDB {
                 //create machine table
                 statement.executeUpdate(
                     "CREATE TABLE MACHINE (\n"
-                    +   "ID INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, \n"
-                    +   "REF VARCAR(30) NOT NULL UNIQUE, \n"
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
+                    +   "REF VARCHAR(30) NOT NULL UNIQUE, \n"
                     +   "DES TEXT NOT NULL, \n"
                     +   "PUISSANCE DOUBLE NOT NULL, \n"
-                    +   ")\n"
+                    +   "PRIMARY KEY (ID)"
+                    +   ");\n"
                 );
 
                 //create operations table
                 statement.executeUpdate(
                     "CREATE TABLE OPERATIONS (\n"
-                    + "ID INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, \n"
-                    + "IDTYPE INTEGER NOT NULL, \n"
-                    + "IDPRODUIT INTEGER NOT NULL, \n"
-                    + ")\n"
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
+                    +   "IDTYPE INTEGER NOT NULL, \n"
+                    +   "IDPRODUIT INTEGER NOT NULL, \n"
+                    +   "PRIMARY KEY(ID)"
+                    +   ");\n"
                 );
 
                 //create precedenceoperation table
                   statement.executeUpdate(
                     "CREATE TABLE PRECEDENCEOPERATION (\n"
-                    + "OPAVANT INTEGER NOT NULL, \n"
-                    + "OPAPRES INTEGER NOT NULL, \n"
-                    + ")\n"
+                    +   "OPAVANT INTEGER NOT NULL, \n"
+                    +   "OPAPRES INTEGER NOT NULL \n"
+                    +   ");\n"
                 );
 
                 //create realise table
                 statement.executeUpdate(
                     "CREATE TABLE REALISE (\n"
-                    + "IDMACHINE INTEGER  NOT NULL (\n"
-                    + "IDTYPE INTEGER NOT NULL (\n"
-                    + "DUREE DOUBLE  (\n"
-                     + ")\n"
+                    +   "IDMACHINE INTEGER  NOT NULL, \n"
+                    +   "IDTYPE INTEGER NOT NULL, \n"
+                    +   "DUREE DOUBLE NOT NULL\n"
+                    +   ");\n"
                 );
 
                 //create typeoperation table
-                 String typeOperation = "CREATE OPERATIONTYPE"+
-                         "(ID INTEGER NOT NULL, " +
-                         "DES VARCHAR(25), " +
-                         " PRIMARY KEY ( ID ))";
-                statement.executeUpdate(typeOperation);
-
-                
-
+                statement.executeUpdate(
+                    "CREATE TABLE OPERATIONTYPE (\n"
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
+                    +   "DES TEXT NOT NULL, \n"
+                    +   "PRIMARY KEY(ID)"
+                    +   ");\n"
+                );
+       
                 //create produit table
-                String product_sql = "CREATE PRODUCT TABLE"+
-                        "(id INTEGER not NULL, " +
-                        " ref VARCHAR(25), " +
-                        "des VARCHAR(25), " +
-                        " PRIMARY KEY ( id ))";
-                statement.executeUpdate(product_sql);
+                statement.executeUpdate(
+                    "CREATE TABLE PRODUCT ( \n"
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
+                    +   "REF VARCHAR(25) NOT NULL, \n"
+                    +   "DES TEXT NOT NULL,"
+                    +   "PRIMARY KEY(ID)"
+                    +   ");\n"
+                );
                 
                 this.myConnection.commit();
             }
@@ -129,6 +133,12 @@ public class ManipDB {
 
                     //drop tables
                     statement.executeUpdate("DROP TABLE MACHINE");
+                    statement.executeUpdate("DROP TABLE OPERATIONS");
+                    statement.executeUpdate("DROP TABLE PRECEDENCEOPERATION");
+                    statement.executeUpdate("DROP TABLE REALISE");
+                    statement.executeUpdate("DROP TABLE OPERATIONTYPE");
+                    statement.executeUpdate("DROP TABLE PRODUCT");
+
                 }
                 catch(SQLException e)
                 {

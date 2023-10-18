@@ -7,18 +7,88 @@
   <groupId>com.project</groupId>
   <artifactId>manipdb</artifactId>
   <version>1.0</version>
+  <packaging>jar</packaging>
 
   <name>manipdb</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+      <java.version>21</java.version>
+      <vaadin.version>24.1.12</vaadin.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <maven.compiler.source>1.7</maven.compiler.source>
+      <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
+  <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>3.1.2</version>
+  </parent>
+
+  <repositories>
+      <repository>
+          <id>Vaadin Directory</id>
+          <url>https://maven.vaadin.com/vaadin-addons</url>
+          <snapshots>
+              <enabled>false</enabled>
+          </snapshots>
+      </repository>
+  </repositories>
+
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>com.vaadin</groupId>
+              <artifactId>vaadin-bom</artifactId>
+              <version>${vaadin.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+
   <dependencies>
+
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <!-- Replace artifactId with vaadin-core to use only free components -->
+        <artifactId>vaadin</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.parttio</groupId>
+        <artifactId>line-awesome</artifactId>
+        <version>1.1.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-testbench-junit5</artifactId>
+        <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -34,54 +104,115 @@
 
   </dependencies>
 
-
-        
-
-  
-
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <defaultGoal>spring-boot:run</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5953</jvmArguments>
+                    <wait>500</wait>
+                    <maxAttempts>240</maxAttempts>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-frontend</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
   </build>
+
+  <profiles>
+      <profile>
+          <!-- Production mode is activated using -Pproduction -->
+          <id>production</id>
+          <dependencies>
+              <!-- Exclude development dependencies from production -->
+              <dependency>
+                  <groupId>com.vaadin</groupId>
+                  <artifactId>vaadin-core</artifactId>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>com.vaadin</groupId>
+                          <artifactId>vaadin-dev</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+          </dependencies>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>com.vaadin</groupId>
+                      <artifactId>vaadin-maven-plugin</artifactId>
+                      <version>${vaadin.version}</version>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>build-frontend</goal>
+                              </goals>
+                              <phase>compile</phase>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+
+      <profile>
+          <id>it</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.springframework.boot</groupId>
+                      <artifactId>spring-boot-maven-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <id>start-spring-boot</id>
+                              <phase>pre-integration-test</phase>
+                              <goals>
+                                  <goal>start</goal>
+                              </goals>
+                          </execution>
+                          <execution>
+                              <id>stop-spring-boot</id>
+                              <phase>post-integration-test</phase>
+                              <goals>
+                                  <goal>stop</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+
+                  <!-- Runs the integration tests (*IT) after the server is started -->
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-failsafe-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>integration-test</goal>
+                                  <goal>verify</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                      <configuration>
+                          <trimStackTrace>false</trimStackTrace>
+                          <enableAssertions>true</enableAssertions>
+                      </configuration>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+
+  </profiles>
 </project>

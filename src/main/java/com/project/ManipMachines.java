@@ -26,14 +26,14 @@ public class ManipMachines {
         this.myConnection.setAutoCommit(false);
 
         try(PreparedStatement pstatement = this.myConnection.prepareStatement(
-            "INSERT INTO machine "
-                + "(id, ref, des, puissance) "
-                + "VALUES(?, ?, ?, ?);"))
+            "INSERT INTO MACHINE "
+                + "(REF, DES, PUISSANCE) "
+                + "VALUES(?, ?, ?);"))
         {
-            pstatement.setInt(1, 3);
-            pstatement.setString(2, reference);
-            pstatement.setString(3, description);
-            pstatement.setFloat(4, power);
+            //pstatement.setInt(1, ?);
+            pstatement.setString(1, reference);
+            pstatement.setString(2, description);
+            pstatement.setFloat(3, power);
             pstatement.executeUpdate();
             System.out.println("Machine created");
         }
@@ -74,8 +74,8 @@ public class ManipMachines {
         this.myConnection.setAutoCommit(false);
 
         try(PreparedStatement pstatement = this.myConnection.prepareStatement(
-            "DELETE FROM machine "
-                + "WHERE ref = ?;"))
+            "DELETE FROM MACHINE "
+                + "WHERE REF = ?;"))
         {
             pstatement.setString(1, ref);
             pstatement.executeUpdate();
