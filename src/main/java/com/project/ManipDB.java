@@ -58,13 +58,30 @@ public class ManipDB {
                     +   ")\n"
                 );
                 //create operations table
-                //...
+                statement.executeUpdate(
+                    "CREATE TABLE OPERATIONS (\n"
+                    + "ID INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, \n"
+                    + "IDTYPE INTEGER NOT NULL, \n"
+                    + "IDPRODUIT INTEGER NOT NULL, \n"
+                    + ")\n"
+                );
                 //create precedenceoperation table
-                //...
+                  statement.executeUpdate(
+                    "CREATE TABLE PRECEDENCEOPERATION (\n"
+                    + "OPAVANT INTEGER NOT NULL, \n"
+                    + "OPAPRES INTEGER NOT NULL, \n"
+                    + ")\n"
+                );
                 //create produit table
-                //...
+
                 //create realise table
-                //...
+                statement.executeUpdate(
+                    "CREATE TABLE REALISE (\n"
+                    + "IDMACHINE INTEGER  NOT NULL (\n"
+                    + "IDTYPE INTEGER NOT NULL (\n"
+                    + "DUREE DOUBLE  (\n"
+                     + ")\n"
+                );
                 //create typeoperation table
                 //...
 
