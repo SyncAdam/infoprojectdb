@@ -87,9 +87,21 @@ public class ManipDB {
                 );
 
                 //create typeoperation table
-                //...
+                 String typeOperation = "CREATE OPERATIONTYPE"+
+                         "(ID INTEGER NOT NULL, " +
+                         "DES VARCHAR(25), " +
+                         " PRIMARY KEY ( ID ))";
+                statement.executeUpdate(typeOperation);
+
+                
+
                 //create produit table
-                //...
+                String product_sql = "CREATE PRODUCT TABLE"+
+                        "(id INTEGER not NULL, " +
+                        " ref VARCHAR(25), " +
+                        "des VARCHAR(25), " +
+                        " PRIMARY KEY ( id ))";
+                statement.executeUpdate(product_sql);
                 
                 this.myConnection.commit();
             }
