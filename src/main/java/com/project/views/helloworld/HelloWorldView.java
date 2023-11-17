@@ -37,6 +37,7 @@ public class HelloWorldView extends HorizontalLayout {
         createDB.addClickListener(e -> {
             try{
                 App.manipDB.createSchema();
+                App.manipDB.mymanipoperationtypes.loadDefaultOperationTypes();
                 Notification.show("Tables created");
             }
             catch(SQLException err)

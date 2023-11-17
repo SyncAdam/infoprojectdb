@@ -9,6 +9,7 @@ public class ManipDB {
     
         public Connection myConnection;
         public ManipMachines mymanipmachines;
+        public ManipOperationTypes mymanipoperationtypes;
         
         private final String username = "m3_asinkovics01";
         private final String password = "0ecd918c";
@@ -22,6 +23,7 @@ public class ManipDB {
             try{
                 this.myConnection = establishConnection(host, port, database);
                 this.mymanipmachines = new ManipMachines(myConnection);
+                this.mymanipoperationtypes = new ManipOperationTypes(myConnection);
                 System.out.println("Connection estabilshed");
             }
             catch(SQLException e)
