@@ -1,0 +1,16 @@
+{
+  "productionMode": false,
+  "eagerServerLoad": false,
+  "npmFolder": "/media/adam/King2/documents/uni/S3/Info/project/manipdb",
+  "node.version": "v18.17.1",
+  "node.download.root": "https://nodejs.org/dist/",
+  "frontendFolder": "/media/adam/King2/documents/uni/S3/Info/project/manipdb/frontend",
+  "connect.javaSourceFolder": "/media/adam/King2/documents/uni/S3/Info/project/manipdb/src/main/java",
+  "javaResourceFolder": "/media/adam/King2/documents/uni/S3/Info/project/manipdb/src/main/resources",
+  "connect.applicationProperties": "/media/adam/King2/documents/uni/S3/Info/project/manipdb/src/main/resources/application.properties",
+  "connect.openApiFile": "/media/adam/King2/documents/uni/S3/Info/project/manipdb/target/generated-resources/openapi.json",
+  "project.frontend.generated": "/media/adam/King2/documents/uni/S3/Info/project/manipdb/frontend/generated",
+  "pnpm.enable": false,
+  "require.home.node": false,
+  "build.folder": "target"
+}
