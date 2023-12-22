@@ -26,7 +26,7 @@ public class ManipMachines {
 
         try(PreparedStatement pstatement = this.myConnection.prepareStatement(
             "INSERT INTO MACHINE "
-                + "(REF, DES, PUISSANCE) "
+                + "(REF, DES, POWER) "
                 + "VALUES(?, ?, ?);"))
         {
             //pstatement.setInt(1, ?);
@@ -93,6 +93,10 @@ public class ManipMachines {
         try{
             createMachine("F01", "rapide", 20);
             createMachine("F02", "lente", 10);
+            ManipProducts.addProduct("FFFFFE", "Bolt", this.myConnection);
+            ManipOperations.addOperation(1, 3, this.myConnection);
+            ManipOperations.addOperation(1, 5, this.myConnection);
+            ManipOperations.addOperation(1, 1, this.myConnection);
         }
         catch(SQLException e)
         {

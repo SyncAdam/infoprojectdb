@@ -17,6 +17,7 @@ public class App implements AppShellConfigurator
 
     App()
     {
+        
         manipDB = new ManipDB();
         
     }
