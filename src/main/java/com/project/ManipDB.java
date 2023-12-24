@@ -8,9 +8,10 @@ import java.sql.Statement;
 public class ManipDB {
     
         public Connection myConnection;
-        public ManipMachines mymanipmachines;
-        public ManipOperationTypes mymanipoperationtypes;
-        public ManipProducts mymanipproducts;
+        public ManipMachines myManipMachines;
+        public ManipOperationTypes myManipOperationTypes;
+        public ManipProducts myManipProducts;
+        public ManipOperations myManipOperations;
         
         private final String username = "m3_asinkovics01";
         private final String password = "0ecd918c";
@@ -23,9 +24,10 @@ public class ManipDB {
         {
             try{
                 this.myConnection = establishConnection(host, port, database);
-                this.mymanipmachines = new ManipMachines(myConnection);
-                this.mymanipoperationtypes = new ManipOperationTypes(myConnection);
-                this.mymanipproducts = new ManipProducts(myConnection);
+                this.myManipMachines = new ManipMachines(myConnection);
+                this.myManipOperationTypes = new ManipOperationTypes(myConnection);
+                this.myManipProducts = new ManipProducts(myConnection);
+                this.myManipOperations = new ManipOperations(myConnection);
                 System.out.println("Connection estabilshed");
             }
             catch(SQLException e)
@@ -52,7 +54,7 @@ public class ManipDB {
             try(Statement statement = this.myConnection.createStatement())
             {
                 //create machine table
-                
+
                 statement.executeUpdate(
                     "CREATE TABLE MACHINE (\n"
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
@@ -69,6 +71,8 @@ public class ManipDB {
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
                     +   "IDTYPE INTEGER NOT NULL, \n"
                     +   "IDPRODUCT INTEGER NOT NULL, \n"
+                    +   "OPBEF INTEGER, \n"
+                    +   "OPAFT INTEGER, \n"
                     +   "PRIMARY KEY(ID)"
                     +   ");\n"
                 );
@@ -140,6 +144,14 @@ public class ManipDB {
 
                 statement.executeUpdate(
                     "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_IDPRODUCT FOREIGN KEY (IDPRODUCT) REFERENCES PRODUCT(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
+                );
+
+                statement.executeUpdate(
+                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_OPBEF FOREIGN KEY (OPBEF) REFERENCES OPERATIONS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
+                );
+
+                statement.executeUpdate(
+                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_OPAFT FOREIGN KEY (OPAFT) REFERENCES OPERATIONS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
                 );
 
                 this.myConnection.commit();
@@ -216,6 +228,9 @@ public class ManipDB {
                 {
                     statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_IDTYPE;");
                     statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_IDPRODUCT;");
+                    statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_OPBEF;");
+                    statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_OPAFT;");
+                    
                     this.myConnection.commit();
                 }
                 catch(SQLException e)

@@ -37,7 +37,8 @@ public class HelloWorldView extends HorizontalLayout {
         createDB.addClickListener(e -> {
             try{
                 App.manipDB.createSchema();
-                App.manipDB.mymanipoperationtypes.loadDefaultOperationTypes();
+                App.manipDB.myManipOperationTypes.loadDefaultOperationTypes();
+                App.manipDB.myManipProducts.loadDefaultProducts();
                 Notification.show("Tables created");
             }
             catch(SQLException err)
@@ -47,7 +48,7 @@ public class HelloWorldView extends HorizontalLayout {
         });
         dummyMachines.addClickListener(e -> {
             try{
-                App.manipDB.mymanipmachines.loadDefaultMachines();
+                App.manipDB.myManipMachines.loadDefaultMachines();
                 Notification.show("Dummy machines created");
             }
             catch(SQLException err)

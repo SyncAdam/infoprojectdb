@@ -43,6 +43,7 @@ public class ManipOperationTypes {
             createOperationType("PRESSING");
             createOperationType("HEATING");
             createOperationType("PLACING");
+            createOperationType("ROUTING");
 
             System.out.println("Default operations loaded.");
         }
