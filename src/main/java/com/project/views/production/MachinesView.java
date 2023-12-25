@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-
 import com.project.App;
 import com.project.views.MainLayout;
 import com.vaadin.flow.component.Text;
@@ -41,6 +40,7 @@ public class MachinesView extends HorizontalLayout
                         App.manipDB.myManipMachines.deleteMachine(machineRef);
                         //somehow remove the fucking panel or reload the page
                         this.remove();
+                        getUI().get().getPage().reload();
                     }
                     catch(SQLException err)
                     {
@@ -58,8 +58,8 @@ public class MachinesView extends HorizontalLayout
         }
         catch(SQLException err){
             err.printStackTrace();
+            System.out.println();
         }
     }
-
 
 }

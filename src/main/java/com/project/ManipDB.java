@@ -112,12 +112,22 @@ public class ManipDB {
                     +   "PRIMARY KEY(ID)"
                     +   ");\n"
                 );
+
+                statement.executeUpdate(
+                    "CREATE TABLE MACHINEWORKING ( "
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, "
+                    +   "IDMACHINE INT NOT NULL, "
+                    +   "IDOPERATIONTYPE INT NOT NULL, "
+                    +   "TIME DATETIME, "
+                    +   "PRIMARY KEY(ID));"
+                );
                 
                 this.myConnection.commit();
 
                 addOperationsConstraints();
                 addRealiseConstraints();
                 addPrecedenceOperationConstraints();
+                addMachineWorkingConstraints();
             }
             catch(SQLException e)
             {
@@ -130,6 +140,26 @@ public class ManipDB {
 
             this.myConnection.setAutoCommit(true);
 
+        }
+
+        public void addMachineWorkingConstraints() throws SQLException
+        {
+            this.myConnection.setAutoCommit(false);
+
+            try(Statement statement = this.myConnection.createStatement())
+            {
+                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_IDMACHINE FOREIGN KEY (IDMACHINE) REFERENCES MACHINE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT");
+                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_IDOPERATIONTYPE FOREIGN KEY (IDOPERATIONTYPE) REFERENCES OPERATIONTYPE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT");
+            }
+            catch(SQLException e)
+            {
+                e.printStackTrace();
+                this.myConnection.rollback();
+                throw(e);
+            }
+
+            this.myConnection.setAutoCommit(true);
+            
         }
 
         public void addOperationsConstraints() throws SQLException
@@ -214,6 +244,34 @@ public class ManipDB {
             }
 
             this.myConnection.setAutoCommit(true);
+        }
+
+        public void deleteMachineWorkingConstraints() throws SQLException
+        {
+
+            this.myConnection.setAutoCommit(false);
+
+            try(Statement statement = this.myConnection.createStatement())
+            {
+                //first delete constraints with other tables, than delete tables
+                try
+                {
+                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_IDMACHINE;");
+                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_IDOPERATIONTYPE;");
+                    
+                    this.myConnection.commit();
+                }
+                catch(SQLException e)
+                {
+                    this.myConnection.rollback();
+                    e.printStackTrace();
+                    throw(e);
+                }
+
+            }
+
+            this.myConnection.setAutoCommit(true);
+
         }
 
         public void deleteOperationsContraints() throws SQLException
@@ -312,6 +370,7 @@ public class ManipDB {
                     deleteOperationsContraints();
                     deleteRealiseConstraints();
                     deletePrecedenceOperationConstraints();
+                    deleteMachineWorkingConstraints();
 
                     this.myConnection.setAutoCommit(false);
 
@@ -321,6 +380,7 @@ public class ManipDB {
                     statement.executeUpdate("DROP TABLE PRECEDENCEOPERATION");
                     statement.executeUpdate("DROP TABLE OPERATIONTYPE");
                     statement.executeUpdate("DROP TABLE PRODUCT");
+                    statement.executeUpdate("DROP TABLE MACHINEWORKING");
 
                     this.myConnection.commit();
 

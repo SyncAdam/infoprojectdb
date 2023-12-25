@@ -17,11 +17,13 @@ public class HelloWorldView extends HorizontalLayout {
     private Button deleteDB;
     private Button createDB;
     private Button dummyMachines;
+    private Button createProduct;
 
     public HelloWorldView() {
         deleteDB = new Button("Delete tables");
         createDB = new Button("Create tables");
         dummyMachines = new Button("Create dummy machines");
+        createProduct = new Button("Create a bolt");
 
         deleteDB.addClickListener(e -> {
             try{
@@ -58,9 +60,9 @@ public class HelloWorldView extends HorizontalLayout {
         });
 
         setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, deleteDB, createDB, dummyMachines);
+        setVerticalComponentAlignment(Alignment.END, deleteDB, createDB, dummyMachines, createProduct);
 
-        add(deleteDB, createDB, dummyMachines);
+        add(deleteDB, createDB, dummyMachines, createProduct);
     }
 
 }
