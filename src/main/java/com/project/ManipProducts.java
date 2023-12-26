@@ -136,22 +136,22 @@ public class ManipProducts {
         addProduct("FFFFFD", "Sprocket", opsSprocket);
     }
 
-    public void createProduct(String productReference) throws SQLException
+    public Product createProduct(String productReference) throws SQLException
     {
         Product product;
         ResultSet machineSet;
 
-        try(PreparedStatement pstatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCT WHERE PRODUCT.REF = ?"))
+        try(PreparedStatement pstatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCT WHERE PRODUCT.REF = ?;"))
         {
             ResultSet productSet;
             pstatement.setString(1, productReference);
             productSet = pstatement.executeQuery();
 
+            productSet.next();
             ResultSet operationSet;
             ArrayList<Operation> operationsForProduct = new ArrayList<>();
 
-
-            try(PreparedStatement pstatement2 = this.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.IDPRODUCT = ?"))
+            try(PreparedStatement pstatement2 = this.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.IDPRODUCT = ?;"))
             {
                 pstatement2.setInt(1, productSet.getInt("ID"));
                 operationSet = pstatement2.executeQuery();
@@ -160,20 +160,34 @@ public class ManipProducts {
                 do
                 {
                     operationSet.next();
-                    System.out.println(operationSet.getInt("OPBEF"));
-                    //operationsForProduct.add(new Operation(operationSet.getInt("IDTYPE"), operationSet.getInt("IDPROUCT"), operationSet.getInt("OPBEF"), operationSet.getInt("OPAFT")));
+                    if(operationSet.getInt("OPBEF") == 0)
+                    {
+                        operationsForProduct.add(new Operation(operationSet.getInt("IDTYPE"), operationSet.getInt("IDPRODUCT"), 0, operationSet.getInt("OPAFT")));
+                    }
+                    else if(operationSet.getInt("OPAFT") == 0)
+                    {
+                        operationsForProduct.add(new Operation(operationSet.getInt("IDTYPE"), operationSet.getInt("IDPRODUCT"), operationSet.getInt("OPBEF"), 0));
+                    }
+                    else if(operationSet.getInt("OPAFT") == 0 && operationSet.getInt("OPBEF") == 0)
+                    {
+                        operationsForProduct.add(new Operation(operationSet.getInt("IDTYPE"), operationSet.getInt("IDPRODUCT"), 0, 0));
+                    }
+                    else
+                    {
+                        operationsForProduct.add(new Operation(operationSet.getInt("IDTYPE"), operationSet.getInt("IDPRODUCT"), operationSet.getInt("OPBEF"), operationSet.getInt("OPAFT")));
+                    }
                 }
                 while(!operationSet.isLast());
-
             }
 
-            
             product = new Product(productSet.getString("REF"), productSet.getString("DES"), 0, operationsForProduct);
         }
         try(PreparedStatement pstatement = this.myConnection.prepareStatement("SELECT * FROM MACHINE"))
         {
             machineSet = pstatement.executeQuery();
         }
+
+        return product;
 
     }
     

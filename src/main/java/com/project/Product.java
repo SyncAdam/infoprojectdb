@@ -6,7 +6,7 @@ public class Product {
 
     private ArrayList<Operation> operationsDone;
     private ArrayList<Operation> operationsNotDone;
-    private String reference;
+    public String reference;
     private String description;
     private double price;
 

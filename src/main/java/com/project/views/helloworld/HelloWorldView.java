@@ -61,7 +61,7 @@ public class HelloWorldView extends HorizontalLayout {
         });
         createProduct.addClickListener(e -> {
             try{
-                App.manipDB.myManipProducts.createProduct("FFFFFE");
+                App.productQueue.add(App.manipDB.myManipProducts.createProduct("FFFFFE"));
             }
             catch(SQLException err)
             {
