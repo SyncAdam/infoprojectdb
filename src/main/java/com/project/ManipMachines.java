@@ -1,8 +1,16 @@
 package com.project;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 
 public class ManipMachines {
 
@@ -26,14 +34,15 @@ public class ManipMachines {
 
         try(PreparedStatement pstatement = this.myConnection.prepareStatement(
             "INSERT INTO MACHINE "
-                + "(REF, DES, POWER) "
-                + "VALUES(?, ?, ?);"
+                + "(REF, DES, POWER, STATE) "
+                + "VALUES(?, ?, ?, ?);"
         ))
         {
             //pstatement.setInt(1, ?);
             pstatement.setString(1, reference);
             pstatement.setString(2, description);
             pstatement.setFloat(3, power);
+            pstatement.setInt(4, 1);
             pstatement.executeUpdate();
             System.out.println("Machine created");
         }
@@ -101,6 +110,43 @@ public class ManipMachines {
             e.printStackTrace();
             System.out.println("Impossible to create default machines");
         }
+
+    }
+
+    public void loadMachineStates() throws SQLException
+    {
+        // query for all machines and set them to off at first
+        this.myConnection.setAutoCommit(false);
+
+        try(Statement statement = this.myConnection.createStatement())
+        {
+            ResultSet res = statement.executeQuery("SELECT * FROM MACHINE");
+
+            do
+            {
+                res.next();
+                try(PreparedStatement pstatement = this.myConnection.prepareStatement(
+                "INSERT INTO MACHINEWORKING "
+                    + "(IDMACHINE, IDOPERATIONTYPE, TIME) "
+                    + "VALUES(?, ?, ?);"
+                ))
+                {
+                    //pstatement.setInt(1, ?);
+                    pstatement.setInt(1, res.getInt("ID"));
+                    pstatement.setInt(2, 14);
+                    pstatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                    pstatement.executeUpdate();
+                }
+                catch(SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            while(!res.isLast());
+
+        }
+
+        this.myConnection.setAutoCommit(true);
 
     }
 }

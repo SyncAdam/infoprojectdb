@@ -51,11 +51,21 @@ public class HelloWorldView extends HorizontalLayout {
         dummyMachines.addClickListener(e -> {
             try{
                 App.manipDB.myManipMachines.loadDefaultMachines();
+                App.manipDB.myManipMachines.loadMachineStates();
                 Notification.show("Dummy machines created");
             }
             catch(SQLException err)
             {
                 Notification.show("Unable to create dummy machines");
+            }
+        });
+        createProduct.addClickListener(e -> {
+            try{
+                App.manipDB.myManipProducts.createProduct("FFFFFE");
+            }
+            catch(SQLException err)
+            {
+                Notification.show("Impossible to create product");
             }
         });
 

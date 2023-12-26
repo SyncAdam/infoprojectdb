@@ -44,6 +44,7 @@ public class ManipOperationTypes {
             createOperationType("HEATING");
             createOperationType("PLACING");
             createOperationType("ROUTING");
+            createOperationType("NOOP");
 
             System.out.println("Default operations loaded.");
         }

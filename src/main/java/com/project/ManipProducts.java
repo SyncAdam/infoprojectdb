@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+
 
 public class ManipProducts {
 
@@ -127,11 +129,52 @@ public class ManipProducts {
         opsBolt.add(new Operation(5, 1, 1, 3));
         opsBolt.add(new Operation(1, 1, 2, 0));
         addProduct("FFFFFE", "Bolt", opsBolt);
-
+        
         ArrayList<Operation> opsSprocket = new ArrayList<>();
         opsSprocket.add(new Operation(3, 2, 0, 2));
         opsSprocket.add(new Operation(13, 2, 1, 0));
         addProduct("FFFFFD", "Sprocket", opsSprocket);
+    }
+
+    public void createProduct(String productReference) throws SQLException
+    {
+        Product product;
+        ResultSet machineSet;
+
+        try(PreparedStatement pstatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCT WHERE PRODUCT.REF = ?"))
+        {
+            ResultSet productSet;
+            pstatement.setString(1, productReference);
+            productSet = pstatement.executeQuery();
+
+            ResultSet operationSet;
+            ArrayList<Operation> operationsForProduct = new ArrayList<>();
+
+
+            try(PreparedStatement pstatement2 = this.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.IDPRODUCT = ?"))
+            {
+                pstatement2.setInt(1, productSet.getInt("ID"));
+                operationSet = pstatement2.executeQuery();
+
+                //nesting meter overload
+                do
+                {
+                    operationSet.next();
+                    System.out.println(operationSet.getInt("OPBEF"));
+                    //operationsForProduct.add(new Operation(operationSet.getInt("IDTYPE"), operationSet.getInt("IDPROUCT"), operationSet.getInt("OPBEF"), operationSet.getInt("OPAFT")));
+                }
+                while(!operationSet.isLast());
+
+            }
+
+            
+            product = new Product(productSet.getString("REF"), productSet.getString("DES"), 0, operationsForProduct);
+        }
+        try(PreparedStatement pstatement = this.myConnection.prepareStatement("SELECT * FROM MACHINE"))
+        {
+            machineSet = pstatement.executeQuery();
+        }
+
     }
     
 }

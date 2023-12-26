@@ -61,6 +61,7 @@ public class ManipDB {
                     +   "REF VARCHAR(30) NOT NULL UNIQUE, \n"
                     +   "DES TEXT NOT NULL, \n"
                     +   "POWER DOUBLE NOT NULL, \n"
+                    +   "STATE INTEGER NOT NULL, \n"
                     +   "PRIMARY KEY (ID)"
                     +   ");\n"
                 );
@@ -118,7 +119,7 @@ public class ManipDB {
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, "
                     +   "IDMACHINE INT NOT NULL, "
                     +   "IDOPERATIONTYPE INT NOT NULL, "
-                    +   "TIME DATETIME, "
+                    +   "TIME TIMESTAMP, "
                     +   "PRIMARY KEY(ID));"
                 );
                 
