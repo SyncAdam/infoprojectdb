@@ -14,12 +14,14 @@ public class App implements AppShellConfigurator
 {
 
     public static ManipDB manipDB;
-    public static ArrayList<Product> productQueue;
+    public static ArrayList<ProductType> productQueue;
+    public static BGService myBgService;
 
     App()
     {
         manipDB = new ManipDB();
         productQueue = new ArrayList<>();
+        myBgService = new BGService(App.manipDB.myConnection);
     }
 
     public static void main(String[] args)

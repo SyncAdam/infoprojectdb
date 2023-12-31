@@ -14,18 +14,18 @@ public class ManipOperations {
     }
 
     //later remove staticity
-    public void addOperation(int idproduct, int idtype, int opbef, int opaft) throws SQLException
+    public void addOperation(String refproduct, int idtype, int opbef, int opaft) throws SQLException
     {
         this.myConnection.setAutoCommit(false);
 
         try(PreparedStatement pStatement = this.myConnection.prepareStatement(
             "INSERT INTO OPERATIONS "
-            + "(IDTYPE, IDPRODUCT) "
+            + "(IDTYPE, REFPRODUCT) "
             + "VALUES(?, ?);"
         ))
         {
             pStatement.setInt(1, idtype);
-            pStatement.setInt(2, idproduct);
+            pStatement.setString(2, refproduct);
             //pStatement.setInt(3, opbef);
             //pStatement.setInt(4, opaft);
             pStatement.executeUpdate();
@@ -41,9 +41,9 @@ public class ManipOperations {
 
     public void loadDefaultOperations() throws SQLException
     {    
-        addOperation(1, 3, 0, 2);
-        addOperation(1, 5, 1, 3);
-        addOperation(1, 1, 2, 0);
+        addOperation("FFFFFE", 3, 0, 2);
+        addOperation("FFFFFE", 5, 1, 3);
+        addOperation("FFFFFE", 1, 2, 0);
     }
     
 }

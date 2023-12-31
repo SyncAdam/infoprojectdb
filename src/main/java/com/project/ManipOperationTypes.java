@@ -31,7 +31,7 @@ public class ManipOperationTypes {
     public void loadDefaultOperationTypes() throws SQLException
     {
         try{
-            createOperationType("MILLING");     //fraisage (CNC)
+            createOperationType("NOOP");     
             createOperationType("DRILLING");    //forage?
             createOperationType("TURNING");     //usinage (tournage)
             createOperationType("GRINDING");    //affutage?
@@ -44,7 +44,7 @@ public class ManipOperationTypes {
             createOperationType("HEATING");
             createOperationType("PLACING");
             createOperationType("ROUTING");
-            createOperationType("NOOP");
+            createOperationType("MILLING");     //fraisage (CNC)
 
             System.out.println("Default operations loaded.");
         }

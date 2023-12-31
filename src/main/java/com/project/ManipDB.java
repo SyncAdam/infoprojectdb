@@ -71,7 +71,7 @@ public class ManipDB {
                     "CREATE TABLE OPERATIONS (\n"
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
                     +   "IDTYPE INTEGER NOT NULL, \n"
-                    +   "IDPRODUCT INTEGER NOT NULL, \n"
+                    +   "REFPRODUCT VARCHAR(25) NOT NULL, \n"
                     +   "OPBEF INTEGER, \n"
                     +   "OPAFT INTEGER, \n"
                     +   "PRIMARY KEY(ID)"
@@ -119,6 +119,17 @@ public class ManipDB {
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, "
                     +   "IDMACHINE INT NOT NULL, "
                     +   "IDOPERATIONTYPE INT NOT NULL, "
+                    +   "TIME TIMESTAMP, "
+                    +   "PRIMARY KEY(ID));"
+                );
+
+                statement.executeUpdate(
+                    "CREATE TABLE PRODUCTQUEUE ("
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, "
+                    +   "REF VARCHAR(25) NOT NULL, "
+                    +   "SERIAL VARCHAR(25) NOT NULL, "
+                    +   "IDOPERATION INT NOT NULL, "      // operation not yet effected
+                    +   "OPERATIONEFFECTED BOOLEAN NOT NULL, "
                     +   "TIME TIMESTAMP, "
                     +   "PRIMARY KEY(ID));"
                 );
@@ -174,7 +185,7 @@ public class ManipDB {
                 );
 
                 statement.executeUpdate(
-                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_IDPRODUCT FOREIGN KEY (IDPRODUCT) REFERENCES PRODUCT(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
+                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_IDPRODUCT FOREIGN KEY (REFPRODUCT) REFERENCES PRODUCT(REF) ON DELETE RESTRICT ON UPDATE RESTRICT;"
                 );
 
                 statement.executeUpdate(
@@ -382,6 +393,7 @@ public class ManipDB {
                     statement.executeUpdate("DROP TABLE OPERATIONTYPE");
                     statement.executeUpdate("DROP TABLE PRODUCT");
                     statement.executeUpdate("DROP TABLE MACHINEWORKING");
+                    statement.executeUpdate("DROP TABLE PRODUCTQUEUE");                    
 
                     this.myConnection.commit();
 

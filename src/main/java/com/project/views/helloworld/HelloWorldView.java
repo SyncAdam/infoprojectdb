@@ -52,6 +52,7 @@ public class HelloWorldView extends HorizontalLayout {
             try{
                 App.manipDB.myManipMachines.loadDefaultMachines();
                 App.manipDB.myManipMachines.loadMachineStates();
+                App.manipDB.myManipMachines.loadDefaultMachinesCapabilities();
                 Notification.show("Dummy machines created");
             }
             catch(SQLException err)
@@ -61,10 +62,11 @@ public class HelloWorldView extends HorizontalLayout {
         });
         createProduct.addClickListener(e -> {
             try{
-                App.productQueue.add(App.manipDB.myManipProducts.createProduct("FFFFFE"));
+                App.manipDB.myManipProducts.createProduct("FFFFFE", "AAAAAB");
             }
             catch(SQLException err)
             {
+                err.printStackTrace();
                 Notification.show("Impossible to create product");
             }
         });

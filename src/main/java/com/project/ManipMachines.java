@@ -133,13 +133,52 @@ public class ManipMachines {
                 {
                     //pstatement.setInt(1, ?);
                     pstatement.setInt(1, res.getInt("ID"));
-                    pstatement.setInt(2, 14);
+                    pstatement.setInt(2, 1);
                     pstatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
                     pstatement.executeUpdate();
                 }
                 catch(SQLException e)
                 {
                     e.printStackTrace();
+                }
+            }
+            while(!res.isLast());
+
+        }
+
+        this.myConnection.setAutoCommit(true);
+
+    }
+
+    public void loadDefaultMachinesCapabilities() throws SQLException
+    {
+        this.myConnection.setAutoCommit(false);
+
+        try(Statement statement = this.myConnection.createStatement())
+        {
+            ResultSet res = statement.executeQuery("SELECT * FROM MACHINE");
+
+            do
+            {
+                res.next();
+                for(int i = 0; i < 14; i++)
+                {
+                    try(PreparedStatement pstatement = this.myConnection.prepareStatement(
+                    "INSERT INTO REALISE "
+                        + "(IDMACHINE, IDTYPE, DUREE) "
+                        + "VALUES(?, ?, ?);"
+                    ))
+                    {
+                        //pstatement.setInt(1, ?);
+                        pstatement.setInt(1, res.getInt("ID"));
+                        pstatement.setInt(2, i + 1);
+                        pstatement.setDouble(3, 2.0);
+                        pstatement.executeUpdate();
+                    }
+                    catch(SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
             while(!res.isLast());

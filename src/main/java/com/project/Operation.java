@@ -1,19 +1,18 @@
 package com.project;
 
-import com.vaadin.flow.component.html.Image;
-
 public class Operation {
     
     public int idtype;
-    public int idproduct;
+    public String refproduct;
     public int opbef;
     public int opaft;
-    Image img = new Image("images/empty-plant.png", "placeholder plant");
+    public int id;
 
-    Operation(int idtype, int idproduct, int opbef, int opaft)
+    Operation(int id, int idtype, String ref, int opbef, int opaft)
     {
+        this.id = id;
         this.idtype = idtype;
-        this.idproduct = idproduct;
+        this.refproduct = ref;
         this.opbef = opbef;
         this.opaft = opaft;
     }
