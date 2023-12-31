@@ -17,11 +17,13 @@ public class HelloWorldView extends HorizontalLayout {
     private Button deleteDB;
     private Button createDB;
     private Button dummyMachines;
+    private Button createProduct;
 
     public HelloWorldView() {
         deleteDB = new Button("Delete tables");
         createDB = new Button("Create tables");
         dummyMachines = new Button("Create dummy machines");
+        createProduct = new Button("Create a bolt");
 
         deleteDB.addClickListener(e -> {
             try{
@@ -37,7 +39,8 @@ public class HelloWorldView extends HorizontalLayout {
         createDB.addClickListener(e -> {
             try{
                 App.manipDB.createSchema();
-                App.manipDB.mymanipoperationtypes.loadDefaultOperationTypes();
+                App.manipDB.myManipOperationTypes.loadDefaultOperationTypes();
+                App.manipDB.myManipProducts.loadDefaultProducts();
                 Notification.show("Tables created");
             }
             catch(SQLException err)
@@ -47,7 +50,9 @@ public class HelloWorldView extends HorizontalLayout {
         });
         dummyMachines.addClickListener(e -> {
             try{
-                App.manipDB.mymanipmachines.loadDefaultMachines();
+                App.manipDB.myManipMachines.loadDefaultMachines();
+                App.manipDB.myManipMachines.loadMachineStates();
+                App.manipDB.myManipMachines.loadDefaultMachinesCapabilities();
                 Notification.show("Dummy machines created");
             }
             catch(SQLException err)
@@ -55,11 +60,21 @@ public class HelloWorldView extends HorizontalLayout {
                 Notification.show("Unable to create dummy machines");
             }
         });
+        createProduct.addClickListener(e -> {
+            try{
+                App.manipDB.myManipProducts.createProduct("FFFFFE", "AAAAAB");
+            }
+            catch(SQLException err)
+            {
+                err.printStackTrace();
+                Notification.show("Impossible to create product");
+            }
+        });
 
         setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, deleteDB, createDB, dummyMachines);
+        setVerticalComponentAlignment(Alignment.END, deleteDB, createDB, dummyMachines, createProduct);
 
-        add(deleteDB, createDB, dummyMachines);
+        add(deleteDB, createDB, dummyMachines, createProduct);
     }
 
 }

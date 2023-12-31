@@ -5,12 +5,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-
 import com.project.App;
 import com.project.views.MainLayout;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.Pane;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -39,9 +37,10 @@ public class MachinesView extends HorizontalLayout
                 String machineRef = queryResultSet.getString("REF");
                 deleteButton.addClickListener(e -> {
                     try{
-                        App.manipDB.mymanipmachines.deleteMachine(machineRef);
+                        App.manipDB.myManipMachines.deleteMachine(machineRef);
                         //somehow remove the fucking panel or reload the page
                         this.remove();
+                        getUI().get().getPage().reload();
                     }
                     catch(SQLException err)
                     {
@@ -59,8 +58,8 @@ public class MachinesView extends HorizontalLayout
         }
         catch(SQLException err){
             err.printStackTrace();
+            System.out.println();
         }
     }
-
 
 }
