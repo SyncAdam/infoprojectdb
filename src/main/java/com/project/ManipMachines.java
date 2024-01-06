@@ -1,16 +1,12 @@
 package com.project;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
 
 public class ManipMachines {
 
@@ -127,14 +123,15 @@ public class ManipMachines {
                 res.next();
                 try(PreparedStatement pstatement = this.myConnection.prepareStatement(
                 "INSERT INTO MACHINEWORKING "
-                    + "(IDMACHINE, IDOPERATIONTYPE, TIME) "
-                    + "VALUES(?, ?, ?);"
+                    + "(MACHINEREF, SERIAL, IDOPERATION, TIME) "
+                    + "VALUES(?, ?, ?, ?);"
                 ))
                 {
                     //pstatement.setInt(1, ?);
-                    pstatement.setInt(1, res.getInt("ID"));
-                    pstatement.setInt(2, 1);
-                    pstatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                    pstatement.setString(1, res.getString("REF"));
+                    pstatement.setNull(2, Types.VARCHAR);
+                    pstatement.setNull(3, Types.INTEGER);
+                    pstatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
                     pstatement.executeUpdate();
                 }
                 catch(SQLException e)
@@ -165,14 +162,14 @@ public class ManipMachines {
                 {
                     try(PreparedStatement pstatement = this.myConnection.prepareStatement(
                     "INSERT INTO REALISE "
-                        + "(IDMACHINE, IDTYPE, DUREE) "
+                        + "(MACHINEREF, IDTYPE, DUREE) "
                         + "VALUES(?, ?, ?);"
                     ))
                     {
                         //pstatement.setInt(1, ?);
-                        pstatement.setInt(1, res.getInt("ID"));
+                        pstatement.setString(1, res.getString("REF"));
                         pstatement.setInt(2, i + 1);
-                        pstatement.setDouble(3, 2.0);
+                        pstatement.setDouble(3, 20.0);
                         pstatement.executeUpdate();
                     }
                     catch(SQLException e)

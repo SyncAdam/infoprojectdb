@@ -72,8 +72,7 @@ public class ManipDB {
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
                     +   "IDTYPE INTEGER NOT NULL, \n"
                     +   "REFPRODUCT VARCHAR(25) NOT NULL, \n"
-                    +   "OPBEF INTEGER, \n"
-                    +   "OPAFT INTEGER, \n"
+                    +   "NEPOCH INT NOT NULL, "
                     +   "PRIMARY KEY(ID)"
                     +   ");\n"
                 );
@@ -89,7 +88,7 @@ public class ManipDB {
                 //create realise table
                 statement.executeUpdate(
                     "CREATE TABLE REALISE (\n"
-                    +   "IDMACHINE INTEGER  NOT NULL, \n"
+                    +   "MACHINEREF VARCHAR(30)  NOT NULL, \n"
                     +   "IDTYPE INTEGER NOT NULL, \n"
                     +   "DUREE DOUBLE NOT NULL\n"
                     +   ");\n"
@@ -109,7 +108,8 @@ public class ManipDB {
                     "CREATE TABLE PRODUCT ( \n"
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
                     +   "REF VARCHAR(25) NOT NULL UNIQUE, \n"
-                    +   "DES TEXT NOT NULL,"
+                    +   "DES TEXT NOT NULL, "
+                    +   "NEPOCH INT NOT NULL, "
                     +   "PRIMARY KEY(ID)"
                     +   ");\n"
                 );
@@ -117,8 +117,9 @@ public class ManipDB {
                 statement.executeUpdate(
                     "CREATE TABLE MACHINEWORKING ( "
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, "
-                    +   "IDMACHINE INT NOT NULL, "
-                    +   "IDOPERATIONTYPE INT NOT NULL, "
+                    +   "MACHINEREF VARCHAR(30) NOT NULL, "
+                    +   "SERIAL VARCHAR(30), "
+                    +   "IDOPERATION INT, "
                     +   "TIME TIMESTAMP, "
                     +   "PRIMARY KEY(ID));"
                 );
@@ -160,8 +161,8 @@ public class ManipDB {
 
             try(Statement statement = this.myConnection.createStatement())
             {
-                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_IDMACHINE FOREIGN KEY (IDMACHINE) REFERENCES MACHINE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT");
-                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_IDOPERATIONTYPE FOREIGN KEY (IDOPERATIONTYPE) REFERENCES OPERATIONTYPE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT");
+                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_MACHINEREF FOREIGN KEY (MACHINEREF) REFERENCES MACHINE(REF) ON DELETE RESTRICT ON UPDATE RESTRICT");
+                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_IDOPERATION FOREIGN KEY (IDOPERATION) REFERENCES OPERATIONS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT");
             }
             catch(SQLException e)
             {
@@ -185,15 +186,7 @@ public class ManipDB {
                 );
 
                 statement.executeUpdate(
-                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_IDPRODUCT FOREIGN KEY (REFPRODUCT) REFERENCES PRODUCT(REF) ON DELETE RESTRICT ON UPDATE RESTRICT;"
-                );
-
-                statement.executeUpdate(
-                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_OPBEF FOREIGN KEY (OPBEF) REFERENCES OPERATIONS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
-                );
-
-                statement.executeUpdate(
-                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_OPAFT FOREIGN KEY (OPAFT) REFERENCES OPERATIONS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
+                    "ALTER TABLE OPERATIONS ADD CONSTRAINT FK_OPERATIONS_REFPRODUCT FOREIGN KEY (REFPRODUCT) REFERENCES PRODUCT(REF) ON DELETE RESTRICT ON UPDATE RESTRICT;"
                 );
 
                 this.myConnection.commit();
@@ -215,7 +208,7 @@ public class ManipDB {
             try(Statement statement = this.myConnection.createStatement())
             {
                 statement.executeUpdate(
-                    "ALTER TABLE REALISE ADD CONSTRAINT FK_REALISE_IDMACHINE FOREIGN KEY (IDMACHINE) REFERENCES MACHINE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
+                    "ALTER TABLE REALISE ADD CONSTRAINT FK_REALISE_MACHINEREF  FOREIGN KEY (MACHINEREF) REFERENCES MACHINE(REF) ON DELETE RESTRICT ON UPDATE RESTRICT;"
                 );
                 statement.executeUpdate(
                     "ALTER TABLE REALISE ADD CONSTRAINT FK_REALISE_IDTYPE FOREIGN KEY (IDTYPE) REFERENCES OPERATIONTYPE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
@@ -268,8 +261,8 @@ public class ManipDB {
                 //first delete constraints with other tables, than delete tables
                 try
                 {
-                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_IDMACHINE;");
-                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_IDOPERATIONTYPE;");
+                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_MACHINEREF;");
+                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_IDOPERATION;");
                     
                     this.myConnection.commit();
                 }
@@ -297,9 +290,7 @@ public class ManipDB {
                 try
                 {
                     statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_IDTYPE;");
-                    statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_IDPRODUCT;");
-                    statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_OPBEF;");
-                    statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_OPAFT;");
+                    statement.executeUpdate("ALTER TABLE OPERATIONS DROP CONSTRAINT FK_OPERATIONS_REFPRODUCT;");
                     
                     this.myConnection.commit();
                 }
@@ -349,7 +340,7 @@ public class ManipDB {
                 //first delete constraints with other tables, than delete tables
                 try
                 {
-                    statement.executeUpdate("ALTER TABLE REALISE DROP CONSTRAINT FK_REALISE_IDMACHINE;");
+                    statement.executeUpdate("ALTER TABLE REALISE DROP CONSTRAINT FK_REALISE_MACHINEREF;");
                     statement.executeUpdate("ALTER TABLE REALISE DROP CONSTRAINT FK_REALISE_IDTYPE;");
                     this.myConnection.commit();
                 }

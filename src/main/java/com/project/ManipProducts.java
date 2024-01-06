@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 
 
@@ -19,7 +18,7 @@ public class ManipProducts {
         this.myConnection = connection;
     }
 
-    public void addProduct(String ref, String des, ArrayList<Operation> operations) throws SQLException
+    public void addProduct(String ref, String des, ArrayList<Operation> operations, int nepochs) throws SQLException
     {
         this.myConnection.setAutoCommit(false);
 
@@ -28,16 +27,15 @@ public class ManipProducts {
             ResultSet res = s.executeQuery("SELECT COUNT(*) FROM OPERATIONS");
             res.next();
 
-            int lastID = res.getInt(1);
-
             try(PreparedStatement pStatement = this.myConnection.prepareStatement(
                 "INSERT INTO PRODUCT "
-                + "(REF, DES) "
-                + "VALUES(?, ?);"
+                + "(REF, DES, NEPOCH) "
+                + "VALUES(?, ?, ?);"
             ))
             {
                 pStatement.setString(1, ref);
                 pStatement.setString(2, des);
+                pStatement.setInt(3, nepochs);
                 pStatement.executeUpdate();
             }
             catch(SQLException e)
@@ -49,12 +47,13 @@ public class ManipProducts {
             {
                 try(PreparedStatement pStatement = this.myConnection.prepareStatement(
                     "INSERT INTO OPERATIONS "
-                    +   "(IDTYPE, REFPRODUCT) "
-                    +    "VALUES(?, ?);"
+                    +   "(IDTYPE, REFPRODUCT, NEPOCH) "
+                    +    "VALUES(?, ?, ?);"
                 ))
                 {
                     pStatement.setInt(1, operations.get(i).idtype);
                     pStatement.setString(2, operations.get(i).refproduct);
+                    pStatement.setInt(3, operations.get(i).nepoch);
                     pStatement.executeUpdate();
                 }
                 catch(SQLException e)
@@ -64,57 +63,6 @@ public class ManipProducts {
                 }
             }
             this.myConnection.commit();
-            for(int i = 0; i < operations.size(); i++)
-            {
-                
-                try(PreparedStatement pStatement = this.myConnection.prepareStatement(
-                    "UPDATE OPERATIONS "
-                    +   "SET OPERATIONS.OPBEF = ? WHERE OPERATIONS.ID = ?;"
-                ))
-                {
-                    if(operations.get(i).opbef != 0)
-                    {
-                        pStatement.setInt(1, operations.get(i).opbef + lastID);
-                    }
-                    else
-                    {
-                        pStatement.setNull(1, Types.INTEGER);
-                    }
-
-                    pStatement.setInt(2, lastID + i + 1);
-                    pStatement.executeUpdate();
-                }
-                catch(SQLException e)
-                {
-                    e.printStackTrace();
-                    this.myConnection.rollback();
-                }
-            }
-            for(int i = 0; i < operations.size(); i++)
-            {
-                try(PreparedStatement pStatement = this.myConnection.prepareStatement(
-                    "UPDATE OPERATIONS "
-                    +   "SET OPERATIONS.OPAFT = ? WHERE OPERATIONS.ID = ?;"
-                ))
-                {
-                    if(operations.get(i).opaft != 0)
-                    {
-                        pStatement.setInt(1, operations.get(i).opaft + lastID);
-                    }
-                    else
-                    {
-                        pStatement.setNull(1, Types.INTEGER);
-                    }
-                    pStatement.setInt(2, lastID + i + 1);
-                    pStatement.executeUpdate();
-                }
-                catch(SQLException e)
-                {
-                    e.printStackTrace();
-                    this.myConnection.rollback();
-                }
-        }
-
         }
 
         this.myConnection.commit();
@@ -125,15 +73,46 @@ public class ManipProducts {
     public void loadDefaultProducts() throws SQLException
     {
         ArrayList<Operation> opsBolt = new ArrayList<>();
-        opsBolt.add(new Operation(1, 3, "FFFFFE", 0, 2));
-        opsBolt.add(new Operation(2, 5, "FFFFFE", 1, 3));
-        opsBolt.add(new Operation(3, 1, "FFFFFE", 2, 0));
-        addProduct("FFFFFE", "Bolt", opsBolt);
+        opsBolt.add(new Operation(1, 3, "FFFFFE", 1));
+        opsBolt.add(new Operation(2, 5, "FFFFFE", 2));
+        opsBolt.add(new Operation(3, 1, "FFFFFE", 3));
+        addProduct("FFFFFE", "Bolt", opsBolt, 3);
         
         ArrayList<Operation> opsSprocket = new ArrayList<>();
-        opsSprocket.add(new Operation(4, 3, "FFFFFD", 0, 2));
-        opsSprocket.add(new Operation(5, 13, "FFFFFD", 1, 0));
-        addProduct("FFFFFD", "Sprocket", opsSprocket);
+        opsSprocket.add(new Operation(4, 3, "FFFFFD", 1));
+        opsSprocket.add(new Operation(5, 13, "FFFFFD", 2));
+        addProduct("FFFFFD", "Sprocket", opsSprocket, 2);
+
+        ArrayList<Operation> opsChisel = new ArrayList<>();
+        opsChisel.add(new Operation(6, 2, "FFFFFC", 1));
+        opsChisel.add(new Operation(7, 14, "FFFFFC", 1));
+        opsChisel.add(new Operation(8, 14, "FFFFFC", 2));
+        opsChisel.add(new Operation(9, 15, "FFFFFC", 2));
+        addProduct("FFFFFC", "Chisel", opsChisel, 2);
+
+        ArrayList<Operation> opsObject = new ArrayList<>();
+        opsObject.add(new Operation(10, 4, "FFF210", 1));
+        opsObject.add(new Operation(11, 10, "FFF210", 1));
+        opsObject.add(new Operation(12, 6, "FFF210", 2));
+        addProduct("FFF210", "Object", opsObject, 2);
+
+        ArrayList<Operation> opsObject1 = new ArrayList<>();
+        opsObject.add(new Operation(10, 4, "FFF211", 1));
+        opsObject.add(new Operation(11, 10, "FFF211", 1));
+        opsObject.add(new Operation(12, 6, "FFF211", 2));
+        addProduct("FFF211", "Object1", opsObject1, 2);
+
+        ArrayList<Operation> opsObject2 = new ArrayList<>();
+        opsObject.add(new Operation(10, 4, "FFF212", 1));
+        opsObject.add(new Operation(11, 10, "FFF212", 1));
+        opsObject.add(new Operation(12, 6, "FFF212", 2));
+        addProduct("FFF212", "Object2", opsObject2, 2);
+
+        ArrayList<Operation> opsObject3 = new ArrayList<>();
+        opsObject.add(new Operation(10, 4, "FFF215", 1));
+        opsObject.add(new Operation(11, 10, "FFF215", 1));
+        opsObject.add(new Operation(12, 6, "FFF215", 2));
+        addProduct("FFF215", "Object3", opsObject3, 2);
     }
 
     public void createProduct(String productReference, String serial) throws SQLException
@@ -142,7 +121,6 @@ public class ManipProducts {
         this.myConnection.setAutoCommit(false);
 
         ProductType product;
-        ResultSet machineSet;
         ResultSet isThereAProductWithTheSameSerial;
 
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCTQUEUE WHERE PRODUCTQUEUE.SERIAL = ?;"))
@@ -154,10 +132,6 @@ public class ManipProducts {
 
         product = getProductType(productReference, this.myConnection);
         
-        try(PreparedStatement pstatement = this.myConnection.prepareStatement("SELECT * FROM MACHINE"))
-        {
-            machineSet = pstatement.executeQuery();
-        }
         //Insert product into productqueue
 
         for(int i = 0; i < product.getOperations().size(); i++)
@@ -206,22 +180,8 @@ public class ManipProducts {
                 do
                 {
                     operationSet.next();
-                    if(operationSet.getInt("OPBEF") == 0)
-                    {
-                        operationsForProduct.add(new Operation(operationSet.getInt("ID"), operationSet.getInt("IDTYPE"), operationSet.getString("REFPRODUCT"), 0, operationSet.getInt("OPAFT")));
-                    }
-                    else if(operationSet.getInt("OPAFT") == 0)
-                    {
-                        operationsForProduct.add(new Operation(operationSet.getInt("ID"), operationSet.getInt("IDTYPE"), operationSet.getString("REFPRODUCT"), operationSet.getInt("OPBEF"), 0));
-                    }
-                    else if(operationSet.getInt("OPAFT") == 0 && operationSet.getInt("OPBEF") == 0)
-                    {
-                        operationsForProduct.add(new Operation(operationSet.getInt("ID"), operationSet.getInt("IDTYPE"), operationSet.getString("REFPRODUCT"), 0, 0));
-                    }
-                    else
-                    {
-                        operationsForProduct.add(new Operation(operationSet.getInt("ID"), operationSet.getInt("IDTYPE"), operationSet.getString("REFPRODUCT"), operationSet.getInt("OPBEF"), operationSet.getInt("OPAFT")));
-                    }
+                    operationsForProduct.add(new Operation(operationSet.getInt("ID"), operationSet.getInt("IDTYPE"), operationSet.getString("REFPRODUCT"), operationSet.getInt("NEPOCH")));
+
                 }
                 while(!operationSet.isLast());
             }
