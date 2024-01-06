@@ -4,17 +4,15 @@ public class Operation {
     
     public int idtype;
     public String refproduct;
-    public int opbef;
-    public int opaft;
+    public int nepoch;
     public int id;
 
-    Operation(int id, int idtype, String ref, int opbef, int opaft)
+    Operation(int id, int idtype, String ref, int nepochs)
     {
         this.id = id;
         this.idtype = idtype;
         this.refproduct = ref;
-        this.opbef = opbef;
-        this.opaft = opaft;
+        this.nepoch = nepochs;
     }
 
 }

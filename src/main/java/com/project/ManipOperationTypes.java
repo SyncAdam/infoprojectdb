@@ -45,6 +45,7 @@ public class ManipOperationTypes {
             createOperationType("PLACING");
             createOperationType("ROUTING");
             createOperationType("MILLING");     //fraisage (CNC)
+            createOperationType("ASSEMBLING");
 
             System.out.println("Default operations loaded.");
         }
