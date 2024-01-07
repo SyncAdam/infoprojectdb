@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class Machine {
 
-    enum State
+    public enum State
     {
         OFFLINE,    //0
         ONLINE,     //1
@@ -29,7 +29,7 @@ public class Machine {
         this.machinestate = State.ONLINE;
     }
 
-    Machine(String reference, String description, double power, int machineState)
+    public Machine(String reference, String description, double power, int machineState)
     {
         this.ref = reference;
         this.description = description;
