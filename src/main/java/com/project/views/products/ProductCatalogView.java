@@ -14,6 +14,7 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -52,8 +53,13 @@ public class ProductCatalogView extends HorizontalLayout{
         this.add(l1, l2, l3);
     }
 
-    public VerticalLayout createProductPane(ProductType p)
+    public Div createProductPane(ProductType p)
     {
+
+        Div uResult = new Div();
+        uResult.getStyle().set("background-color", "#f2f2f2");
+        uResult.getStyle().set("border-radius", "20px");
+
         VerticalLayout res = new VerticalLayout();
 
         Html label = new Html("<div style='font-size: 20px;'>" + p.getDescription() + "</div>");
@@ -114,7 +120,7 @@ public class ProductCatalogView extends HorizontalLayout{
                     }
                 }
 
-                
+
                 buyField.setValue(1);
                 popup.close();
             });
@@ -133,7 +139,9 @@ public class ProductCatalogView extends HorizontalLayout{
 
         res.add(hL2);
 
-        return res;
+        uResult.add(res);
+
+        return uResult;
     }
 
     private ArrayList<ProductType> queryProductTypes() throws SQLException
