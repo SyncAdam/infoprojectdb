@@ -126,7 +126,6 @@ public class MachinesView extends HorizontalLayout
         deleteButton.addClickListener(e -> {
             try{
                 App.manipDB.myManipMachines.deleteMachine(machineRef);
-                //somehow remove the fucking panel or reload the page
                 getUI().get().getPage().reload();
             }
             catch(SQLException err)

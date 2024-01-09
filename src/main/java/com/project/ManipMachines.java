@@ -158,7 +158,7 @@ public class ManipMachines {
             do
             {
                 res.next();
-                for(int i = 0; i < 14; i++)
+                for(int i = 0; i < 15; i++)
                 {
                     try(PreparedStatement pstatement = this.myConnection.prepareStatement(
                     "INSERT INTO REALISE "
