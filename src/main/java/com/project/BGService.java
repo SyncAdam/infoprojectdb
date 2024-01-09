@@ -23,10 +23,10 @@ public class BGService {
         this.myConnection = connection;
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(this::runTask, initialDelay, rerunTime_seconds, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::runTasks, initialDelay, rerunTime_seconds, TimeUnit.SECONDS);
     }
 
-    public void runTask()
+    public void runTasks()
     {
         try{
             checkQueue();
@@ -41,6 +41,7 @@ public class BGService {
         ResultSet machinesQuery;
 
         ArrayList<Machine> machines = new ArrayList<>();
+        ArrayList<BGServiceHelper> helper = new ArrayList<>();
 
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM MACHINE"))
         {
@@ -58,44 +59,48 @@ public class BGService {
             do
             {
                 operationQueueQuery.next();
-                try(PreparedStatement pStatement2 = this.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
-                {
-                    
-                    int opID = operationQueueQuery.getInt("IDOPERATION");
-                    int opEpoch;
-                    int opIDTYPE;
-                    ResultSet res;
-
-                    pStatement2.setInt(1, opID);
-                    res = pStatement2.executeQuery();
-                    res.next();
-
-                    opEpoch = res.getInt("NEPOCH");
-                    opIDTYPE = res.getInt("IDTYPE");
-
-
-                    //if the operations before the selected operation are done
-                    
-
-                    //there is a machine available assign product to machine
-                    for(int i = 0; i < machines.size(); i++)
-                    {
-                        //optimize for selecting the fastest machine to do the job
-                        if(Product.opbeforeCompleted(opEpoch, operationQueueQuery.getString("SERIAL"), this.myConnection) && machines.get(i).getState() == Machine.State.ONLINE && machines.get(i).does(opIDTYPE, this.myConnection) && !operationQueueQuery.getBoolean("OPERATIONEFFECTED"))
-                        {    
-                            System.out.println(machines.get(i).getRef()+" can work on " + opIDTYPE);
-                            if(assignToMachine(machines.get(i).getRef(), operationQueueQuery.getString("SERIAL"), opID))
-                            {
-                                System.out.println("Assigned");
-                                return;
-                            } 
-                        }
-                    }
-
-                }
+                helper.add(new BGServiceHelper(operationQueueQuery.getInt("IDOPERATION"), operationQueueQuery.getString("SERIAL"), operationQueueQuery.getBoolean("OPERATIONEFFECTED")));
             }
             while(!operationQueueQuery.isLast());
-        }                
+        }
+        for(BGServiceHelper help : helper)
+        {
+            try(PreparedStatement pStatement2 = this.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
+            {
+                
+                int opID = help.getOperationID();
+                int opEpoch;
+                int opIDTYPE;
+                ResultSet res;
+
+                pStatement2.setInt(1, opID);
+                res = pStatement2.executeQuery();
+                res.next();
+
+                opEpoch = res.getInt("NEPOCH");
+                opIDTYPE = res.getInt("IDTYPE");
+
+
+                //if the operations before the selected operation are done
+                
+                boolean opsbeforeComplete = Product.opbeforeCompleted(opEpoch, help.getSerial(), this.myConnection);
+
+                //there is a machine available assign product to machine
+                for(int i = 0; i < machines.size(); i++)
+                {
+                    //optimize for selecting the fastest machine to do the job
+                    if(opsbeforeComplete && machines.get(i).getState() == Machine.State.ONLINE && machines.get(i).does(opIDTYPE, this.myConnection) && !help.getOperationEffected())
+                    {    
+                        System.out.println(machines.get(i).getRef()+ " can work on " + help.getSerial() + " operation "+ opIDTYPE);
+                        if(assignToMachine(machines.get(i).getRef(), help.getSerial(), opID))
+                        {
+                            System.out.println("Assigned");
+                            return;
+                        } 
+                    }
+                }
+            }
+        }
     }
 
     public boolean assignToMachine(String machineRef, String serial, int opID) throws SQLException
@@ -190,7 +195,7 @@ public class BGService {
 
                                 if(deltaT >= doTime)
                                 {
-                                    if(unassignFromMachine(machineref, serial, productidOP)) System.out.println("Work unassigned from machine " + res2.getString("MACHINEREF"));
+                                    if(unassignFromMachine(machineref, serial, productidOP, res.getString("REF"))) System.out.println("Work unassigned from machine " + res2.getString("MACHINEREF"));
                                     return;
                                 }
                             }
@@ -207,7 +212,7 @@ public class BGService {
         }
     }
 
-    public boolean unassignFromMachine(String machineRef, String serial, int opID) throws SQLException
+    public boolean unassignFromMachine(String machineRef, String serial, int opID, String ref) throws SQLException
     {
         //set machine to free
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("UPDATE MACHINE SET MACHINE.STATE = 1 WHERE MACHINE.REF = ?"))
@@ -222,6 +227,14 @@ public class BGService {
             pStatement.setInt(1, opID);
             pStatement.setString(2, serial);
             pStatement.executeUpdate();
+        }
+
+        try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCTQUEUE WHERE PRODUCTQUEUE.SERIAL = ?"))
+        {
+            pStatement.setString(1, serial);
+            ResultSet r = pStatement.executeQuery();
+
+            if(!r.next()) addProductToStock(serial, ref);
         }
 
         //set machineworking and create timestamp
@@ -257,6 +270,24 @@ public class BGService {
             r.next();
 
             return r.getInt("IDTYPE");
+        }
+    }
+
+    public void addProductToStock(String serial, String ref) throws SQLException
+    {
+        try(PreparedStatement pStatement = this.myConnection.prepareStatement(
+            "INSERT INTO STOCK "
+            +   "(REF, SERIAL) "
+            +   "VALUES (?, ?);"
+        ))
+        {
+            pStatement.setString(1, ref);
+            pStatement.setString(2, serial);
+            pStatement.executeUpdate();
+        }
+        catch(SQLException err)
+        {
+            err.printStackTrace();
         }
     }
 

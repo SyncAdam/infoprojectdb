@@ -77,14 +77,6 @@ public class ManipDB {
                     +   ");\n"
                 );
 
-                //create precedenceoperation table
-                  statement.executeUpdate(
-                    "CREATE TABLE PRECEDENCEOPERATION (\n"
-                    +   "OPBEF INTEGER NOT NULL, \n"        //operation before
-                    +   "OPAFT INTEGER NOT NULL \n"         //opeartion after
-                    +   ");\n"
-                );
-
                 //create realise table
                 statement.executeUpdate(
                     "CREATE TABLE REALISE (\n"
@@ -134,12 +126,19 @@ public class ManipDB {
                     +   "TIME TIMESTAMP, "
                     +   "PRIMARY KEY(ID));"
                 );
+
+                statement.executeUpdate(
+                    "CREATE TABLE STOCK ("
+                    +   "ID INTEGER NOT NULL AUTO_INCREMENT, "
+                    +   "REF VARCHAR(25) NOT NULL, "
+                    +   "SERIAL VARCHAR(25) NOT NULL, "
+                    +   "PRIMARY KEY(ID));"
+                );
                 
                 this.myConnection.commit();
 
                 addOperationsConstraints();
                 addRealiseConstraints();
-                addPrecedenceOperationConstraints();
                 addMachineWorkingConstraints();
             }
             catch(SQLException e)
@@ -226,31 +225,6 @@ public class ManipDB {
             this.myConnection.setAutoCommit(true);
         }
 
-        public void addPrecedenceOperationConstraints() throws SQLException
-        {
-            this.myConnection.setAutoCommit(false);
-
-            try(Statement statement = this.myConnection.createStatement())
-            {
-                statement.executeUpdate(
-                    "ALTER TABLE PRECEDENCEOPERATION ADD CONSTRAINT FK_PRECEDENCEOPERATION_OPBEF FOREIGN KEY (OPBEF) REFERENCES OPERATIONTYPE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
-                );
-                statement.executeUpdate(
-                    "ALTER TABLE PRECEDENCEOPERATION ADD CONSTRAINT FK_PRECEDENCEOPERATION_OPAFT FOREIGN KEY (OPAFT) REFERENCES OPERATIONTYPE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
-                );
-
-                this.myConnection.commit();
-            }
-            catch(SQLException e)
-            {
-                e.printStackTrace();
-                this.myConnection.rollback();
-                throw(e);
-            }
-
-            this.myConnection.setAutoCommit(true);
-        }
-
         public void deleteMachineWorkingConstraints() throws SQLException
         {
 
@@ -306,31 +280,6 @@ public class ManipDB {
             this.myConnection.setAutoCommit(true);
         }
 
-        public void deletePrecedenceOperationConstraints() throws SQLException
-        {
-            this.myConnection.setAutoCommit(false);
-
-            try(Statement statement = this.myConnection.createStatement())
-            {
-                //first delete constraints with other tables, than delete tables
-                try
-                {
-                    statement.executeUpdate("ALTER TABLE PRECEDENCEOPERATION DROP CONSTRAINT FK_PRECEDENCEOPERATION_OPBEF;");
-                    statement.executeUpdate("ALTER TABLE PRECEDENCEOPERATION DROP CONSTRAINT FK_PRECEDENCEOPERATION_OPAFT;");
-                    this.myConnection.commit();
-                }
-                catch(SQLException e)
-                {
-                    this.myConnection.rollback();
-                    e.printStackTrace();
-                    throw(e);
-                }
-
-            }
-
-            this.myConnection.setAutoCommit(true);
-        }
-
         public void deleteRealiseConstraints() throws SQLException
         {
             this.myConnection.setAutoCommit(false);
@@ -372,7 +321,6 @@ public class ManipDB {
                     //drop tables
                     deleteOperationsContraints();
                     deleteRealiseConstraints();
-                    deletePrecedenceOperationConstraints();
                     deleteMachineWorkingConstraints();
 
                     this.myConnection.setAutoCommit(false);
@@ -380,11 +328,11 @@ public class ManipDB {
                     statement.executeUpdate("DROP TABLE OPERATIONS");
                     statement.executeUpdate("DROP TABLE REALISE");
                     statement.executeUpdate("DROP TABLE MACHINE");
-                    statement.executeUpdate("DROP TABLE PRECEDENCEOPERATION");
                     statement.executeUpdate("DROP TABLE OPERATIONTYPE");
                     statement.executeUpdate("DROP TABLE PRODUCT");
                     statement.executeUpdate("DROP TABLE MACHINEWORKING");
-                    statement.executeUpdate("DROP TABLE PRODUCTQUEUE");                    
+                    statement.executeUpdate("DROP TABLE PRODUCTQUEUE"); 
+                    statement.executeUpdate("DROP TABLE STOCK");        
 
                     this.myConnection.commit();
 

@@ -12,7 +12,7 @@ public class Product extends ProductType{
     ArrayList<Operation> operationsDone;
     ArrayList<Operation> operationsNotDone;
 
-    Product(String serial, ProductType p)
+    public Product(String serial, ProductType p)
     {
         super(p.getReference(), p.getDescription(), p.getPrice(), p.getOperations(), p.pathToImage);
         this.serial = serial;
@@ -35,13 +35,16 @@ public class Product extends ProductType{
             do
             {
                 r.next();
+                int idOp = r.getInt("IDOPERATION");
 
                 try(PreparedStatement pStatement2 = myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
                 {
-                    pStatement2.setInt(1, r.getInt("IDOPERATION"));
+                    pStatement2.setInt(1, idOp);
                     ResultSet rset = pStatement2.executeQuery();
                     rset.next();
-                    if(rset.getInt("NEPOCH") < operationEpoch && !r.getBoolean("OPERATIONEFFECTED")) return false;
+                    int nepoch = rset.getInt("NEPOCH");
+                    boolean opeff = r.getBoolean("OPERATIONEFFECTED");
+                    if(nepoch < operationEpoch) return false;
                 }
             }
             while(!r.isLast());
