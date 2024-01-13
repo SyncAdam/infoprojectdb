@@ -158,57 +158,80 @@ public class BGService {
 
                 int productidOP = res.getInt("IDOPERATION");
                 String serial = res.getString("SERIAL");
+                String reference = res.getString("REF");
 
-                try(PreparedStatement pStatement2 = this.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE SERIAL = ?"))
-                {
-                    pStatement2.setString(1, serial);
+                queryMachineWorking(reference, serial, productidOP);
 
-                    ResultSet res2 = pStatement2.executeQuery();
-
-                    long currentTime = System.currentTimeMillis();
-
-
-                    //think you've seen nesting before???
-                    //there is a proper way to write code...........
-                    do
-                    {
-                        res2.next();
-                        
-                        String machineref = res2.getString("MACHINEREF");
-                        int idOperationType = getIDOperationType(res2.getInt("IDOPERATION"));
-
-                        if(productidOP == res2.getInt("IDOPERATION"))
-                        {
-                            try(PreparedStatement pStatement3 = this.myConnection.prepareStatement("SELECT * FROM REALISE WHERE REALISE.MACHINEREF = ? AND REALISE.IDTYPE = ?"))
-                            {
-                                pStatement3.setString(1, machineref);
-                                pStatement3.setInt(2, idOperationType);
-
-                                ResultSet res3 = pStatement3.executeQuery();
-
-                                res3.next();
-
-                                long doTime = (long) res3.getDouble("DUREE");
-                                
-                                long workTime = res2.getTimestamp("TIME").getTime();
-                                long deltaT = (currentTime - workTime) / 1000;
-
-                                if(deltaT >= doTime)
-                                {
-                                    if(unassignFromMachine(machineref, serial, productidOP, res.getString("REF"))) System.out.println("Work unassigned from machine " + res2.getString("MACHINEREF"));
-                                    return;
-                                }
-                            }
-                            catch(SQLException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    while(!res2.isLast());
-                }
             }
             while(!res.isLast());
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void queryMachineWorking(String reference, String serial, int productidOP)
+    {
+        try(PreparedStatement pStatement2 = this.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE SERIAL = ?"))
+        {
+            pStatement2.setString(1, serial);
+
+            ResultSet res2 = pStatement2.executeQuery();
+
+            long currentTime = System.currentTimeMillis();
+
+            //there is a proper way to write code...........
+            do
+            {
+                res2.next();
+                
+                String machineref = res2.getString("MACHINEREF");
+                int idOperationType = getIDOperationType(res2.getInt("IDOPERATION"));
+
+                if(productidOP == res2.getInt("IDOPERATION"))
+                {
+                    try
+                    {
+                        checkIfUnassign(machineref, idOperationType, productidOP, currentTime, res2.getTimestamp("TIME").getTime(), serial, reference, res2.getString("MACHINEREF"));
+                    }
+                    catch(SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            while(!res2.isLast());
+        }
+        catch(SQLException err)
+        {
+            err.printStackTrace();
+        }
+    }
+
+    public void checkIfUnassign(String machineRef, int idOperationType, int productidOP, long currentTime, long workTime, String serial, String resRef, String res2machineRef) throws SQLException
+    {
+        try(PreparedStatement pStatement3 = this.myConnection.prepareStatement("SELECT * FROM REALISE WHERE REALISE.MACHINEREF = ? AND REALISE.IDTYPE = ?"))
+        {
+            pStatement3.setString(1, machineRef);
+            pStatement3.setInt(2, idOperationType);
+
+            ResultSet res3 = pStatement3.executeQuery();
+
+            res3.next();
+
+            long doTime = (long) res3.getDouble("DUREE");
+            long deltaT = (currentTime - workTime) / 1000;
+
+            if(deltaT >= doTime)
+            {
+                if(unassignFromMachine(machineRef, serial, productidOP, resRef)) System.out.println("Work unassigned from machine " + machineRef);
+                return;
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
         }
     }
 

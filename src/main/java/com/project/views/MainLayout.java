@@ -1,11 +1,10 @@
 package com.project.views;
 
-import com.project.views.about.AboutView;
 import com.project.views.helloworld.HelloWorldView;
+import com.project.views.production.MachineCatalogView;
 import com.project.views.production.MachinesView;
 import com.project.views.products.ProductCatalogView;
 import com.project.views.products.StockView;
-import com.project.views.production.EconomyView;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -64,7 +63,7 @@ public class MainLayout extends AppLayout {
         //nav.addItem(new SideNavItem("Economy", EconomyView.class, LineAwesomeIcon.COINS_SOLID.create()));
         nav.addItem(new SideNavItem("Products", ProductCatalogView.class, LineAwesomeIcon.FILE.create()));
         nav.addItem(new SideNavItem("Stock", StockView.class, LineAwesomeIcon.FILE.create()));
-
+        nav.addItem(new SideNavItem("Machine catalog", MachineCatalogView.class, LineAwesomeIcon.MAILCHIMP.create()));
 
         return nav;
     }
