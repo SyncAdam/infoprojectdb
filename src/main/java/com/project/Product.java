@@ -43,7 +43,6 @@ public class Product extends ProductType{
                     ResultSet rset = pStatement2.executeQuery();
                     rset.next();
                     int nepoch = rset.getInt("NEPOCH");
-                    boolean opeff = r.getBoolean("OPERATIONEFFECTED");
                     if(nepoch < operationEpoch) return false;
                 }
             }

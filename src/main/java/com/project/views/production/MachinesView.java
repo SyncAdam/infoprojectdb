@@ -4,12 +4,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.project.App;
+import com.project.History;
 import com.project.Machine;
 import com.project.views.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -30,24 +35,22 @@ public class MachinesView extends HorizontalLayout
         
         VerticalLayout v1 = new VerticalLayout();
         VerticalLayout v2 = new VerticalLayout();
-        VerticalLayout v3 = new VerticalLayout();
 
         vLayouts.add(v1);
         vLayouts.add(v2);
-        vLayouts.add(v3);
 
         try
         {  
             ArrayList<Machine> machines = queryMachines();
             for(int i = 0; i < machines.size(); i++)
             {
-                vLayouts.get(i % 3).add(createMachinePane(machines.get(i)));
+                vLayouts.get(i % 2).add(createMachinePane(machines.get(i)));
             }
         }
         catch(SQLException e)
         {}
 
-        this.add(vLayouts.get(0), vLayouts.get(1), vLayouts.get(2));
+        this.add(vLayouts.get(0), vLayouts.get(1));
     }
 
     public ArrayList<Machine> queryMachines() throws SQLException
@@ -120,6 +123,30 @@ public class MachinesView extends HorizontalLayout
 
         result.add(myDiv);
 
+        //Machine history
+        try
+        {
+            List<History> histories = queryHistory(m.getRef());
+
+            Grid<History> historyGridMachine = new Grid<>(History.class, false);
+            historyGridMachine.addColumn(History::getSerial).setHeader("Serial");
+            historyGridMachine.addColumn(History::getOperationID).setHeader("Op ID");
+            historyGridMachine.addColumn(History::getOperationID).setHeader("Op Type");
+            historyGridMachine.addColumn(History::getTimeString).setHeader("Time");
+
+            historyGridMachine.setItems(histories);
+
+            for(Column<History> c : historyGridMachine.getColumns())
+            {
+                if(c.getHeaderText().equals("Op ID") || c.getHeaderText().equals("Op Type"))
+                    c.setWidth("5px");
+            }
+
+            result.add(historyGridMachine);
+        }
+        catch(SQLException err)
+        {}
+    
         Button deleteButton = new Button("Delete machine");
         String machineRef = m.getRef();
 
@@ -139,7 +166,26 @@ public class MachinesView extends HorizontalLayout
         uResult.add(result);
 
         return uResult;
+    }
 
+    private ArrayList<History> queryHistory(String machineref) throws SQLException
+    {
+        ArrayList<History> result = new ArrayList<>();
+
+        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE MACHINEWORKING.MACHINEREF = ?"))
+        {
+            pStatement.setString(1, machineref);
+            ResultSet res = pStatement.executeQuery();
+
+            do
+            {
+                res.next();
+                result.add(new History(res.getString("SERIAL"), machineref, res.getTimestamp("TIME"), res.getInt("IDOPERATION")));
+            }
+            while(!res.isLast());
+        }
+        Collections.reverse(result);
+        return result;
     }
 
 }
