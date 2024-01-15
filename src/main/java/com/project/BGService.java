@@ -35,24 +35,31 @@ public class BGService {
         catch(SQLException e){}
     }
 
-    public void checkQueue() throws SQLException
+    public ArrayList<Machine> queryMachines() throws SQLException
     {
-        ResultSet operationQueueQuery;
         ResultSet machinesQuery;
 
         ArrayList<Machine> machines = new ArrayList<>();
-        ArrayList<BGServiceHelper> helper = new ArrayList<>();
-
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM MACHINE"))
         {
             machinesQuery = pStatement.executeQuery();
             do
             {
                 machinesQuery.next();
-                machines.add(new Machine(machinesQuery.getString("REF"), machinesQuery.getString("DES"), machinesQuery.getDouble("POWER"), machinesQuery.getInt("STATE")));
+                machines.add(new Machine(machinesQuery.getString("REF"), machinesQuery.getString("MODEL"), machinesQuery.getInt("STATE")));
             }
             while(!machinesQuery.isLast());
         }
+
+        return machines;
+    }
+
+    public ArrayList<BGServiceHelper> queryHelpers() throws SQLException
+    {
+        ResultSet operationQueueQuery;
+
+        ArrayList<BGServiceHelper> helper = new ArrayList<>();
+
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCTQUEUE"))
         {
             operationQueueQuery = pStatement.executeQuery();
@@ -63,6 +70,17 @@ public class BGService {
             }
             while(!operationQueueQuery.isLast());
         }
+
+        return helper;
+    }
+
+    public void checkQueue() throws SQLException
+    {
+        ResultSet operationQueueQuery;
+
+        ArrayList<Machine> machines = queryMachines();
+        ArrayList<BGServiceHelper> helper = queryHelpers();
+
         for(BGServiceHelper help : helper)
         {
             try(PreparedStatement pStatement2 = this.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
@@ -95,6 +113,16 @@ public class BGService {
                         if(assignToMachine(machines.get(i).getRef(), help.getSerial(), opID))
                         {
                             System.out.println("Assigned");
+                            for(int j = 0; j < machines.size(); j++)
+                            {
+                                machines.remove(j);
+                            }
+                            for(int j = 0; j < helper.size(); j++)
+                            {
+                                helper.remove(j);
+                            }
+                            machines = queryMachines();
+                            helper = queryHelpers();
                             return;
                         } 
                     }
@@ -167,7 +195,6 @@ public class BGService {
         }
         catch(SQLException e)
         {
-            e.printStackTrace();
         }
     }
 
@@ -211,9 +238,10 @@ public class BGService {
 
     public void checkIfUnassign(String machineRef, int idOperationType, int productidOP, long currentTime, long workTime, String serial, String resRef, String res2machineRef) throws SQLException
     {
-        try(PreparedStatement pStatement3 = this.myConnection.prepareStatement("SELECT * FROM REALISE WHERE REALISE.MACHINEREF = ? AND REALISE.IDTYPE = ?"))
+        try(PreparedStatement pStatement3 = this.myConnection.prepareStatement("SELECT * FROM REALISE WHERE REALISE.MTYPE = ? AND REALISE.IDTYPE = ?"))
         {
-            pStatement3.setString(1, machineRef);
+            String mtype = Machine.getTypeFromRef(machineRef);
+            pStatement3.setString(1, mtype);   //need type from ref
             pStatement3.setInt(2, idOperationType);
 
             ResultSet res3 = pStatement3.executeQuery();

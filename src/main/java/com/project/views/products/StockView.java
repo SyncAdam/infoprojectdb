@@ -121,11 +121,11 @@ public class StockView extends HorizontalLayout{
 
         if(productCount == 1)
         {
-            dialogLayout.add(new Html("<div style='font-size: 16px;'>" + "There is " + productCount  + " " + p.getDescription() + "</div>"));
+            dialogLayout.add(new Html("<div style='font-size: 16px;'>" + "There is " + productCount  + " " + p.getDescription() + " in stock"  + "</div>"));
         }
         else
         {
-            dialogLayout.add(new Html("<div style='font-size: 16px;'>" + "There are " + productCount  + " " + p.getDescription() + "s" + "</div>"));
+            dialogLayout.add(new Html("<div style='font-size: 16px;'>" + "There are " + productCount  + " " + p.getDescription() + "s" + " in stock" + "</div>"));
         }
 
         TextField searchField = new TextField();

@@ -75,12 +75,12 @@ public class ManipProducts {
         ArrayList<Operation> opsBolt = new ArrayList<>();
         opsBolt.add(new Operation(1, 3, "FFFFFE", 1));
         opsBolt.add(new Operation(2, 5, "FFFFFE", 2));
-        opsBolt.add(new Operation(3, 1, "FFFFFE", 3));
+        opsBolt.add(new Operation(3, 2, "FFFFFE", 3));
         addProduct("FFFFFE", "Bolt", opsBolt, 3);
         
         ArrayList<Operation> opsSprocket = new ArrayList<>();
         opsSprocket.add(new Operation(4, 3, "FFFFFD", 1));
-        opsSprocket.add(new Operation(5, 13, "FFFFFD", 2));
+        opsSprocket.add(new Operation(5, 14, "FFFFFD", 2));
         addProduct("FFFFFD", "Sprocket", opsSprocket, 2);
 
         ArrayList<Operation> opsChisel = new ArrayList<>();
@@ -97,21 +97,21 @@ public class ManipProducts {
         addProduct("FFF210", "Object", opsObject, 2);
 
         ArrayList<Operation> opsObject1 = new ArrayList<>();
-        opsObject.add(new Operation(10, 4, "FFF211", 1));
-        opsObject.add(new Operation(11, 10, "FFF211", 1));
-        opsObject.add(new Operation(12, 6, "FFF211", 2));
+        opsObject1.add(new Operation(13, 4, "FFF211", 1));
+        opsObject1.add(new Operation(14, 10, "FFF211", 1));
+        opsObject1.add(new Operation(15, 6, "FFF211", 2));
         addProduct("FFF211", "Object1", opsObject1, 2);
 
         ArrayList<Operation> opsObject2 = new ArrayList<>();
-        opsObject.add(new Operation(10, 4, "FFF212", 1));
-        opsObject.add(new Operation(11, 10, "FFF212", 1));
-        opsObject.add(new Operation(12, 6, "FFF212", 2));
+        opsObject2.add(new Operation(16, 4, "FFF212", 1));
+        opsObject2.add(new Operation(17, 10, "FFF212", 1));
+        opsObject2.add(new Operation(18, 6, "FFF212", 2));
         addProduct("FFF212", "Object2", opsObject2, 2);
 
         ArrayList<Operation> opsObject3 = new ArrayList<>();
-        opsObject.add(new Operation(10, 4, "FFF215", 1));
-        opsObject.add(new Operation(11, 10, "FFF215", 1));
-        opsObject.add(new Operation(12, 6, "FFF215", 2));
+        opsObject3.add(new Operation(19, 4, "FFF215", 1));
+        opsObject3.add(new Operation(20, 10, "FFF215", 1));
+        opsObject3.add(new Operation(21, 6, "FFF215", 2));
         addProduct("FFF215", "Object3", opsObject3, 2);
     }
 

@@ -61,9 +61,9 @@ public class MainLayout extends AppLayout {
         //nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
         nav.addItem(new SideNavItem("Machines", MachinesView.class, LineAwesomeIcon.COG_SOLID.create()));
         //nav.addItem(new SideNavItem("Economy", EconomyView.class, LineAwesomeIcon.COINS_SOLID.create()));
-        nav.addItem(new SideNavItem("Products", ProductCatalogView.class, LineAwesomeIcon.FILE.create()));
-        nav.addItem(new SideNavItem("Stock", StockView.class, LineAwesomeIcon.FILE.create()));
-        nav.addItem(new SideNavItem("Machine catalog", MachineCatalogView.class, LineAwesomeIcon.MAILCHIMP.create()));
+        nav.addItem(new SideNavItem("Products", ProductCatalogView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+        nav.addItem(new SideNavItem("Stock", StockView.class, LineAwesomeIcon.BOXES_SOLID.create()));
+        nav.addItem(new SideNavItem("Machine catalog", MachineCatalogView.class, LineAwesomeIcon.INDUSTRY_SOLID.create()));
 
         return nav;
     }

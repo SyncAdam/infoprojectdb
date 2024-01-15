@@ -38,9 +38,8 @@ public class HelloWorldView extends HorizontalLayout {
                 App.manipDB.createSchema();
                 App.manipDB.myManipOperationTypes.loadDefaultOperationTypes();
                 App.manipDB.myManipProducts.loadDefaultProducts();
-                App.manipDB.myManipMachines.loadDefaultMachines();
-                App.manipDB.myManipMachines.loadMachineStates();
-                App.manipDB.myManipMachines.loadDefaultMachinesCapabilities();
+                App.manipDB.myManipMachines.loadDefaultMachinesTypes();
+                //App.manipDB.myManipMachines.loadMachineStates();
                 Notification.show("Tables created");
             }
             catch(SQLException err)

@@ -1,5 +1,7 @@
 package com.project;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +9,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ManipMachines {
 
@@ -23,28 +30,28 @@ public class ManipMachines {
      * @param description   <code>String</code> A description of the machine 
      * @param power         <code>Float</code> The machines power 
      */
-    void createMachine(String reference, String description, float power) throws SQLException
+    public static void createMachine(String reference, String model) throws SQLException
     {
         //disable autocommit to create a statement
-        this.myConnection.setAutoCommit(false);
+        App.manipDB.myConnection.setAutoCommit(false);
 
-        try(PreparedStatement pstatement = this.myConnection.prepareStatement(
+        try(PreparedStatement pstatement = App.manipDB.myConnection.prepareStatement(
             "INSERT INTO MACHINE "
-                + "(REF, DES, POWER, STATE) "
-                + "VALUES(?, ?, ?, ?);"
+                + "(REF, MODEL, STATE) "
+                + "VALUES(?, ?, ?);"
         ))
         {
-            //pstatement.setInt(1, ?);
             pstatement.setString(1, reference);
-            pstatement.setString(2, description);
-            pstatement.setFloat(3, power);
-            pstatement.setInt(4, 1);
+            pstatement.setString(2, model);
+            pstatement.setInt(3, 1);
             pstatement.executeUpdate();
             System.out.println("Machine created");
+
+            loadMachineState(reference);
         }
 
         //reenable autocommit after the statement is finished
-        this.myConnection.setAutoCommit(true);
+        App.manipDB.myConnection.setAutoCommit(true);
     }
 
     /**
@@ -95,21 +102,59 @@ public class ManipMachines {
     /**
      * Load default dummy machines for testing
      */
-    public void loadDefaultMachines() throws SQLException
+    public void loadDefaultMachinesTypes() throws SQLException
     {
-        try{
-            createMachine("F01", "rapide", 20);
-            createMachine("F02", "lente", 10);
+        List<MachineType> machineTypes = queryMachineTypes();
+
+        for(MachineType m : machineTypes)
+        {
+            addOperationsForMachineType(m);
+        }
+    }
+
+    public void addOperationsForMachineType(MachineType m) throws SQLException
+    {
+        ArrayList<Integer> operations = MachineType.getOperationIDs(m.getType());
+        for(int i = 0; i < operations.size(); i++)
+        {
+            try(PreparedStatement pStatement = this.myConnection.prepareStatement("INSERT INTO REALISE (MTYPE, IDTYPE, DUREE) VALUES (?, ?, ?);"))
+            {
+                pStatement.setString(1, m.getTypeString());
+                pStatement.setInt(2, operations.get(i));
+                pStatement.setDouble(3, 20.0);
+
+                pStatement.executeUpdate();
+            }
+            catch(SQLException e)
+            {
+                e.printStackTrace();
+                throw(e);
+            }
+        }
+    }
+
+    public static void loadMachineState(String ref) throws SQLException
+    {
+        try(PreparedStatement pstatement = App.manipDB.myConnection.prepareStatement(
+        "INSERT INTO MACHINEWORKING "
+            + "(MACHINEREF, SERIAL, IDOPERATION, TIME) "
+            + "VALUES(?, ?, ?, ?);"
+        ))
+        {
+            //pstatement.setInt(1, ?);
+            pstatement.setString(1, ref);
+            pstatement.setNull(2, Types.VARCHAR);
+            pstatement.setNull(3, Types.INTEGER);
+            pstatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            pstatement.executeUpdate();
         }
         catch(SQLException e)
         {
             e.printStackTrace();
-            System.out.println("Impossible to create default machines");
         }
-
     }
 
-    public void loadMachineStates() throws SQLException
+    public void loadMachineState() throws SQLException
     {
         // query for all machines and set them to off at first
         this.myConnection.setAutoCommit(false);
@@ -147,42 +192,21 @@ public class ManipMachines {
 
     }
 
-    public void loadDefaultMachinesCapabilities() throws SQLException
+    public static List<MachineType> queryMachineTypes()
     {
-        this.myConnection.setAutoCommit(false);
+        List<MachineType> result = new ArrayList<>();
 
-        try(Statement statement = this.myConnection.createStatement())
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try{
+            File resource = new File(System.getProperty("user.dir") + "\\src\\main\\resources\\META-INF\\resources\\machinecatalog\\machineType.json");
+            result = Arrays.asList(objectMapper.readValue(resource, MachineType[].class));
+        }
+        catch (IOException err)
         {
-            ResultSet res = statement.executeQuery("SELECT * FROM MACHINE");
-
-            do
-            {
-                res.next();
-                for(int i = 0; i < 15; i++)
-                {
-                    try(PreparedStatement pstatement = this.myConnection.prepareStatement(
-                    "INSERT INTO REALISE "
-                        + "(MACHINEREF, IDTYPE, DUREE) "
-                        + "VALUES(?, ?, ?);"
-                    ))
-                    {
-                        //pstatement.setInt(1, ?);
-                        pstatement.setString(1, res.getString("REF"));
-                        pstatement.setInt(2, i + 1);
-                        pstatement.setDouble(3, 20.0);
-                        pstatement.executeUpdate();
-                    }
-                    catch(SQLException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            while(!res.isLast());
-
+            err.printStackTrace();
         }
 
-        this.myConnection.setAutoCommit(true);
-
+        return result;
     }
 }

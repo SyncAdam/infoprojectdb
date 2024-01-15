@@ -1,5 +1,6 @@
 package com.project;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 public class History {
@@ -40,6 +41,22 @@ public class History {
     public int getOperationID()
     {
         return this.operationID;
+    }
+
+    public String getOperationType()
+    {
+        String result = "";
+
+        try
+        {
+            result = ManipOperations.getOperationTypeByID(this.operationID);
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     
