@@ -3,6 +3,7 @@
         "name" : "CNC-M-001",
         "type" : "CNCMILL",
         "model" : "CNC-M",
+        "power" : 20.0,
         "manufacturer" : "MILLS&STU CO.",
         "pathtoimage" : "images/CNC.png",
         "description" : "This machine does clean CNC work."
@@ -11,6 +12,7 @@
         "name" : "Assembler-533",
         "type" : "ASSEMBLER",
         "model" : "Assembler-machine",
+        "power" : 20.0,
         "manufacturer" : "MILLS&STU CO.",
         "pathtoimage" : "images/assembler.png",
         "description" : ""
@@ -19,6 +21,7 @@
         "name" : "JET 3",
         "type" : "LATHE",
         "model" : "Mr. Turner",
+        "power" : 20.0,
         "manufacturer" : "HEINEMANN",
         "pathtoimage" : "images/lathe.png",
         "description" : ""
@@ -27,6 +30,7 @@
         "name" : "Push it boy",
         "type" : "PRESS",
         "model" : "Industrial Press Series",
+        "power" : 20.0,
         "manufacturer" : "HEINEMANN",
         "pathtoimage" : "images/press.png",
         "description" : ""
@@ -35,6 +39,7 @@
         "name" : "Big boy",
         "type" : "BANDSAW",
         "model" : "Sawing series",
+        "power" : 20.0,
         "manufacturer" : "ROSIES METALWORKS",
         "pathtoimage" : "images/saw.png",
         "description" : ""
@@ -43,6 +48,7 @@
         "name" : "HOT boy",
         "type" : "OVEN",
         "model" : "Hot stuff",
+        "power" : 20.0,
         "manufacturer" : "ROSIES METALWORKS",
         "pathtoimage" : "images/oven.png",
         "description" : ""
@@ -51,6 +57,7 @@
         "name" : "ETCHER 3000",
         "type" : "CHEMICALETCHER",
         "model" : "ETCHING SERIES",
+        "power" : 20.0,
         "manufacturer" : "HERBERT CHEMICAL WIZARDS",
         "pathtoimage" : "images/chemicaletcher.png",
         "description" : ""
