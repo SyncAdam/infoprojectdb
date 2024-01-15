@@ -2,7 +2,10 @@ package com.project;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.vaadin.base.devserver.DevServerOutputTracker.Result;
 
 public class ManipOperations {
 
@@ -44,6 +47,33 @@ public class ManipOperations {
         addOperation("FFFFFE", 3, 0, 2);
         addOperation("FFFFFE", 5, 1, 3);
         addOperation("FFFFFE", 1, 2, 0);
+    }
+
+    public static String getOperationTypeByID(int id) throws SQLException
+    {
+        String result = "";
+
+        int opTypeID = 0;
+
+        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
+        {
+            pStatement.setInt(1, id);
+            ResultSet res1 = pStatement.executeQuery();
+            res1.next();
+
+            opTypeID = res1.getInt("IDTYPE");
+        }
+
+        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM OPERATIONTYPE WHERE ID = ?"))
+        {
+            pStatement.setInt(1, opTypeID);
+            ResultSet res2 = pStatement.executeQuery();
+            res2.next();
+
+            result = res2.getString("DES");
+        }
+
+        return result;
     }
     
 }

@@ -63,7 +63,7 @@ public class MachinesView extends HorizontalLayout
             do
             {
                 res.next();
-                result.add(new Machine(res.getString("REF"), res.getString("DES"), res.getDouble("POWER"), res.getInt("STATE")));
+                result.add(new Machine(res.getString("REF"), res.getString("MODEL"), res.getInt("STATE")));
             }
             while(!res.isLast());
         }
@@ -74,7 +74,6 @@ public class MachinesView extends HorizontalLayout
     {
         Div uResult = new Div();
         uResult.getStyle().set("width", "100%");
-        uResult.getStyle().set("height", "100%");
         uResult.getStyle().set("background-color", "#f2f2f2");
         uResult.getStyle().set("border-radius", "20px");
 
@@ -130,15 +129,14 @@ public class MachinesView extends HorizontalLayout
 
             Grid<History> historyGridMachine = new Grid<>(History.class, false);
             historyGridMachine.addColumn(History::getSerial).setHeader("Serial");
-            historyGridMachine.addColumn(History::getOperationID).setHeader("Op ID");
-            historyGridMachine.addColumn(History::getOperationID).setHeader("Op Type");
+            historyGridMachine.addColumn(History::getOperationType).setHeader("Op Type");
             historyGridMachine.addColumn(History::getTimeString).setHeader("Time");
 
             historyGridMachine.setItems(histories);
 
             for(Column<History> c : historyGridMachine.getColumns())
             {
-                if(c.getHeaderText().equals("Op ID") || c.getHeaderText().equals("Op Type"))
+                if(c.getHeaderText().equals("Op Type"))
                     c.setWidth("5px");
             }
 
@@ -180,7 +178,8 @@ public class MachinesView extends HorizontalLayout
             do
             {
                 res.next();
-                result.add(new History(res.getString("SERIAL"), machineref, res.getTimestamp("TIME"), res.getInt("IDOPERATION")));
+                if(res.getInt("IDOPERATION") != 0)
+                    result.add(new History(res.getString("SERIAL"), machineref, res.getTimestamp("TIME"), res.getInt("IDOPERATION")));
             }
             while(!res.isLast());
         }

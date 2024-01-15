@@ -111,7 +111,7 @@ public class ProductCatalogView extends HorizontalLayout{
                 {
                     try
                     {   
-                        String serial = p.getReference() + "-" + serialGenerator();
+                        String serial = p.getReference() + "-" + serialGenerator(15);
                         App.manipDB.myManipProducts.createProduct(p.getReference(), serial);
                     }
                     catch(SQLException err)
@@ -161,10 +161,8 @@ public class ProductCatalogView extends HorizontalLayout{
         return result;
     }
 
-    public static String serialGenerator() {
+    public static String serialGenerator(int size) {
         String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        int size = 15;
 
         Random random = new Random();
 

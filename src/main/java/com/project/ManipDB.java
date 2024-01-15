@@ -59,8 +59,7 @@ public class ManipDB {
                     "CREATE TABLE MACHINE (\n"
                     +   "ID INTEGER NOT NULL AUTO_INCREMENT, \n"
                     +   "REF VARCHAR(30) NOT NULL UNIQUE, \n"
-                    +   "DES TEXT NOT NULL, \n"
-                    +   "POWER DOUBLE NOT NULL, \n"
+                    +   "MODEL VARCHAR(30) NOT NULL, "
                     +   "STATE INTEGER NOT NULL, \n"
                     +   "PRIMARY KEY (ID)"
                     +   ");\n"
@@ -80,7 +79,7 @@ public class ManipDB {
                 //create realise table
                 statement.executeUpdate(
                     "CREATE TABLE REALISE (\n"
-                    +   "MACHINEREF VARCHAR(30)  NOT NULL, \n"
+                    +   "MTYPE VARCHAR(30)  NOT NULL, \n"
                     +   "IDTYPE INTEGER NOT NULL, \n"
                     +   "DUREE DOUBLE NOT NULL\n"
                     +   ");\n"
@@ -207,9 +206,6 @@ public class ManipDB {
             try(Statement statement = this.myConnection.createStatement())
             {
                 statement.executeUpdate(
-                    "ALTER TABLE REALISE ADD CONSTRAINT FK_REALISE_MACHINEREF  FOREIGN KEY (MACHINEREF) REFERENCES MACHINE(REF) ON DELETE RESTRICT ON UPDATE RESTRICT;"
-                );
-                statement.executeUpdate(
                     "ALTER TABLE REALISE ADD CONSTRAINT FK_REALISE_IDTYPE FOREIGN KEY (IDTYPE) REFERENCES OPERATIONTYPE(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;"
                 );
 
@@ -289,7 +285,6 @@ public class ManipDB {
                 //first delete constraints with other tables, than delete tables
                 try
                 {
-                    statement.executeUpdate("ALTER TABLE REALISE DROP CONSTRAINT FK_REALISE_MACHINEREF;");
                     statement.executeUpdate("ALTER TABLE REALISE DROP CONSTRAINT FK_REALISE_IDTYPE;");
                     this.myConnection.commit();
                 }

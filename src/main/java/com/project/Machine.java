@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class Machine {
 
@@ -17,23 +18,20 @@ public class Machine {
     }
 
     private String ref;
-    private String description;
-    private double power;
+    private String model;
     private State machinestate;
 
-    Machine(String reference, String description, double power)
+    Machine(String reference, String model)
     {
         this.ref = reference;
-        this.description = description;
-        this.power = power;
+        this.model = model;
         this.machinestate = State.ONLINE;
     }
 
-    public Machine(String reference, String description, double power, int machineState)
+    public Machine(String reference, String model, int machineState)
     {
         this.ref = reference;
-        this.description = description;
-        this.power = power;
+        this.model = model;
         switch(machineState)
         {
             case 0:
@@ -68,24 +66,77 @@ public class Machine {
 
     public String getDes()
     {
-        return this.description;
+        String result = "";
+
+        List<MachineType> machines = ManipMachines.queryMachineTypes();
+
+        for(MachineType m : machines)
+        {
+            if(m.model.equals(this.model)) result = m.getDescription();
+        }
+
+        return result;
     }
 
     public double getPower()
     {
-        return this.power;
+        double result = 0.0;
+
+        List<MachineType> machines = ManipMachines.queryMachineTypes();
+
+        for(MachineType m : machines)
+        {
+            if(m.model.equals(this.model)) result = m.getPower();
+        }
+
+        return result;
     }
 
     public boolean does(int operationTypeID, Connection myConnection) throws SQLException
     {
-        try(PreparedStatement pStatement = myConnection.prepareStatement("SELECT * FROM REALISE WHERE REALISE.MACHINEREF = ? AND REALISE.IDTYPE = ?"))
+        try(PreparedStatement pStatement = myConnection.prepareStatement("SELECT * FROM REALISE WHERE REALISE.MTYPE = ? AND REALISE.IDTYPE = ?"))
         {
-            pStatement.setString(1, this.ref);
+
+            pStatement.setString(1, getTypeFromModel(this.model));
             pStatement.setInt(2, operationTypeID);
 
             ResultSet r = pStatement.executeQuery();
 
             return r.next();
         }
+    }
+
+    public static String getTypeFromModel(String model)
+    {
+        String result = "";
+
+        List<MachineType> machines = ManipMachines.queryMachineTypes();
+
+        for(MachineType m : machines)
+        {
+            if(m.model.equals(model)) result = m.getTypeString();
+        }
+
+        return result;
+    }
+
+    public static String getTypeFromRef(String ref) throws SQLException
+    {
+        String result = "";
+
+        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINE WHERE REF = ?"))
+        {
+            pStatement.setString(1, ref);
+            ResultSet r = pStatement.executeQuery();
+
+            r.next();
+            result = Machine.getTypeFromModel(r.getString("MODEL"));
+        }
+        catch(SQLException err)
+        {
+            System.out.println("Unable to obtain type from reference");
+        }
+
+        return result;
     }
 }
