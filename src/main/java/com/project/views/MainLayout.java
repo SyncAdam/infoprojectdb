@@ -1,5 +1,6 @@
 package com.project.views;
 
+import com.project.ManipDB;
 import com.project.views.helloworld.HelloWorldView;
 import com.project.views.production.MachineCatalogView;
 import com.project.views.production.MachinesView;
@@ -12,12 +13,16 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import java.sql.SQLException;
+
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
@@ -28,10 +33,21 @@ public class MainLayout extends AppLayout {
 
     private H2 viewTitle;
 
+    public static ManipDB manipDB;
+
     public MainLayout() {
+        manipDB = new ManipDB();
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
+        try
+        {
+            Notification.show(manipDB.myConnection.getSchema());
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void addHeaderContent() {
@@ -57,13 +73,13 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
         //nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
         nav.addItem(new SideNavItem("Machines", MachinesView.class, LineAwesomeIcon.COG_SOLID.create()));
-        //nav.addItem(new SideNavItem("Economy", EconomyView.class, LineAwesomeIcon.COINS_SOLID.create()));
-        nav.addItem(new SideNavItem("Products", ProductCatalogView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
         nav.addItem(new SideNavItem("Stock", StockView.class, LineAwesomeIcon.BOXES_SOLID.create()));
+        nav.addItem(new SideNavItem("Products", ProductCatalogView.class, LineAwesomeIcon.DOLLAR_SIGN_SOLID.create()));
+        //nav.addItem(new SideNavItem("Economy", EconomyView.class, LineAwesomeIcon.COINS_SOLID.create()));
         nav.addItem(new SideNavItem("Machine catalog", MachineCatalogView.class, LineAwesomeIcon.INDUSTRY_SOLID.create()));
+        nav.addItem(new SideNavItem("Settings", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
 
         return nav;
     }

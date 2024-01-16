@@ -23,6 +23,7 @@ public class ManipDB {
         public ManipDB()
         {
             try{
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 this.myConnection = establishConnection(host, port, database);
                 this.myManipMachines = new ManipMachines(myConnection);
                 this.myManipOperationTypes = new ManipOperationTypes(myConnection);
@@ -30,7 +31,7 @@ public class ManipDB {
                 this.myManipOperations = new ManipOperations(myConnection);
                 System.out.println("Connection estabilshed");
             }
-            catch(SQLException e)
+            catch(SQLException | ClassNotFoundException e)
             {
                 System.out.println("ERROR : \n");
                 e.printStackTrace();
@@ -159,7 +160,6 @@ public class ManipDB {
 
             try(Statement statement = this.myConnection.createStatement())
             {
-                statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_MACHINEREF FOREIGN KEY (MACHINEREF) REFERENCES MACHINE(REF) ON DELETE RESTRICT ON UPDATE RESTRICT");
                 statement.executeUpdate("ALTER TABLE MACHINEWORKING ADD CONSTRAINT FK_MACHINEWORKING_IDOPERATION FOREIGN KEY (IDOPERATION) REFERENCES OPERATIONS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT");
             }
             catch(SQLException e)
@@ -231,7 +231,6 @@ public class ManipDB {
                 //first delete constraints with other tables, than delete tables
                 try
                 {
-                    statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_MACHINEREF;");
                     statement.executeUpdate("ALTER TABLE MACHINEWORKING DROP CONSTRAINT FK_MACHINEWORKING_IDOPERATION;");
                     
                     this.myConnection.commit();

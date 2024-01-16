@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -14,11 +14,11 @@ import java.util.concurrent.TimeUnit;
 public class BGService {
 
     private static final int initialDelay = 0;
-    private static final int rerunTime_seconds = 1;
+    private static final int rerunTime_seconds = 2;
 
     private Connection myConnection;
 
-    BGService(Connection connection)
+    public BGService(Connection connection)
     {
         this.myConnection = connection;
 
@@ -35,11 +35,11 @@ public class BGService {
         catch(SQLException e){}
     }
 
-    public ArrayList<Machine> queryMachines() throws SQLException
+    public CopyOnWriteArrayList<Machine> queryMachines() throws SQLException
     {
         ResultSet machinesQuery;
 
-        ArrayList<Machine> machines = new ArrayList<>();
+        CopyOnWriteArrayList<Machine> machines = new CopyOnWriteArrayList<>();
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM MACHINE"))
         {
             machinesQuery = pStatement.executeQuery();
@@ -54,11 +54,11 @@ public class BGService {
         return machines;
     }
 
-    public ArrayList<BGServiceHelper> queryHelpers() throws SQLException
+    public CopyOnWriteArrayList<BGServiceHelper> queryHelpers() throws SQLException
     {
         ResultSet operationQueueQuery;
 
-        ArrayList<BGServiceHelper> helper = new ArrayList<>();
+        CopyOnWriteArrayList<BGServiceHelper> helper = new CopyOnWriteArrayList<>();
 
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("SELECT * FROM PRODUCTQUEUE"))
         {
@@ -76,10 +76,8 @@ public class BGService {
 
     public void checkQueue() throws SQLException
     {
-        ResultSet operationQueueQuery;
-
-        ArrayList<Machine> machines = queryMachines();
-        ArrayList<BGServiceHelper> helper = queryHelpers();
+        CopyOnWriteArrayList<Machine> machines = queryMachines();
+        CopyOnWriteArrayList<BGServiceHelper> helper = queryHelpers();
 
         for(BGServiceHelper help : helper)
         {
@@ -109,24 +107,25 @@ public class BGService {
                     //optimize for selecting the fastest machine to do the job
                     if(opsbeforeComplete && machines.get(i).getState() == Machine.State.ONLINE && machines.get(i).does(opIDTYPE, this.myConnection) && !help.getOperationEffected())
                     {    
+
+                        System.out.println("Entering big if with i = " + i);
                         System.out.println(machines.get(i).getRef()+ " can work on " + help.getSerial() + " operation "+ opIDTYPE);
                         if(assignToMachine(machines.get(i).getRef(), help.getSerial(), opID))
                         {
-                            System.out.println("Assigned");
-                            for(int j = 0; j < machines.size(); j++)
-                            {
-                                machines.remove(j);
-                            }
-                            for(int j = 0; j < helper.size(); j++)
-                            {
-                                helper.remove(j);
-                            }
+                            machines.clear();
+                            helper.clear();
+
                             machines = queryMachines();
                             helper = queryHelpers();
+                            System.out.println("Assigned");
                             return;
                         } 
                     }
                 }
+            }
+            catch(SQLException e)
+            {
+                e.printStackTrace();
             }
         }
     }
@@ -134,6 +133,7 @@ public class BGService {
     public boolean assignToMachine(String machineRef, String serial, int opID) throws SQLException
     {
         //set machine to busy
+        System.out.println("Assign to machine called for " + machineRef + " with product " + serial);
         try(PreparedStatement pStatement = this.myConnection.prepareStatement("UPDATE MACHINE SET MACHINE.STATE = 2 WHERE MACHINE.REF = ?"))
         {
             pStatement.setString(1, machineRef);

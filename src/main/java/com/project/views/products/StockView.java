@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.project.App;
 import com.project.History;
 import com.project.ManipProducts;
 import com.project.Product;
@@ -269,7 +268,7 @@ public class StockView extends HorizontalLayout{
     private ArrayList<ProductType> queryStock() throws SQLException
     {
         ArrayList<ProductType> result = new ArrayList<>();
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM STOCK"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM STOCK"))
         {
             ResultSet res = pStatement.executeQuery();
 
@@ -287,7 +286,7 @@ public class StockView extends HorizontalLayout{
 
     private String getDesFromRef(String ref) throws SQLException
     {
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM PRODUCT WHERE REF = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM PRODUCT WHERE REF = ?"))
         {
             pStatement.setString(1, ref);
             ResultSet queryResults = pStatement.executeQuery();
@@ -302,7 +301,7 @@ public class StockView extends HorizontalLayout{
     {
         ArrayList<Product> res = new ArrayList<>();
 
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM STOCK WHERE REF = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM STOCK WHERE REF = ?"))
         {
             pStatement.setString(1, ref);
             ResultSet result = pStatement.executeQuery();
@@ -310,7 +309,7 @@ public class StockView extends HorizontalLayout{
             do
             {
                 result.next();
-                res.add(new Product(result.getString("SERIAL"), ManipProducts.getProductType(ref, App.manipDB.myConnection)));
+                res.add(new Product(result.getString("SERIAL"), ManipProducts.getProductType(ref, MainLayout.manipDB.myConnection)));
             }
             while(!result.isLast());
         }
@@ -319,7 +318,7 @@ public class StockView extends HorizontalLayout{
 
     public void deleteProductFromStock(String serial) throws SQLException
     {
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("DELETE FROM STOCK WHERE SERIAL = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("DELETE FROM STOCK WHERE SERIAL = ?"))
         {
             pStatement.setString(1, serial);
             pStatement.executeUpdate();
@@ -335,7 +334,7 @@ public class StockView extends HorizontalLayout{
     {
         ArrayList<History> result = new ArrayList<>();
 
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE SERIAL = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE SERIAL = ?"))
         {
             pStatement.setString(1, serial);
             ResultSet res = pStatement.executeQuery();

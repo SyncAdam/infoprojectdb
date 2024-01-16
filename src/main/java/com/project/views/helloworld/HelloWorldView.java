@@ -2,7 +2,6 @@ package com.project.views.helloworld;
 
 import java.sql.SQLException;
 
-import com.project.App;
 import com.project.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
@@ -24,7 +23,7 @@ public class HelloWorldView extends HorizontalLayout {
 
         deleteDB.addClickListener(e -> {
             try{
-                App.manipDB.deleteSchema();
+                MainLayout.manipDB.deleteSchema();
                 Notification.show("Tables deleted");
             }
             catch(SQLException err)
@@ -35,11 +34,11 @@ public class HelloWorldView extends HorizontalLayout {
         });
         createDB.addClickListener(e -> {
             try{
-                App.manipDB.createSchema();
-                App.manipDB.myManipOperationTypes.loadDefaultOperationTypes();
-                App.manipDB.myManipProducts.loadDefaultProducts();
-                App.manipDB.myManipMachines.loadDefaultMachinesTypes();
-                //App.manipDB.myManipMachines.loadMachineStates();
+                MainLayout.manipDB.createSchema();
+                MainLayout.manipDB.myManipOperationTypes.loadDefaultOperationTypes();
+                MainLayout.manipDB.myManipProducts.loadDefaultProducts();
+                MainLayout.manipDB.myManipMachines.loadDefaultMachinesTypes();
+                //MainLayout.manipDB.myManipMachines.loadMachineStates();
                 Notification.show("Tables created");
             }
             catch(SQLException err)

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.project.App;
 import com.project.History;
 import com.project.Machine;
 import com.project.views.MainLayout;
@@ -56,7 +55,7 @@ public class MachinesView extends HorizontalLayout
     public ArrayList<Machine> queryMachines() throws SQLException
     {
         ArrayList<Machine> result = new ArrayList<>();
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINE"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINE"))
         {
             ResultSet res = pStatement.executeQuery();
 
@@ -86,9 +85,15 @@ public class MachinesView extends HorizontalLayout
         myDiv.getStyle().set("justify-content", "space-between");
         myDiv.getStyle().set("align-items", "center");
 
-        
-        Html label = new Html("<div style='font-size: 20px;'>" + m.getRef() + "</div>");
-        myDiv.add(label);
+        VerticalLayout v = new VerticalLayout();
+               
+        Html label = new Html("<div style='font-size: 20px;'>" + Machine.getTypeFromRef(m.getRef()) + "</div>");
+        Html label1 = new Html("<div style='font-size: 16px;'>" + m.getRef() + "</div>");
+
+        v.add(label);
+        v.add(label1);
+
+        myDiv.add(v);
 
         String circleHtmlP1 = "<div style='width: 8px; height: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;color: #d2d2d2; font-weight: bold; background-color: ";
 
@@ -150,7 +155,7 @@ public class MachinesView extends HorizontalLayout
 
         deleteButton.addClickListener(e -> {
             try{
-                App.manipDB.myManipMachines.deleteMachine(machineRef);
+                MainLayout.manipDB.myManipMachines.deleteMachine(machineRef);
                 getUI().get().getPage().reload();
             }
             catch(SQLException err)
@@ -170,7 +175,7 @@ public class MachinesView extends HorizontalLayout
     {
         ArrayList<History> result = new ArrayList<>();
 
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE MACHINEWORKING.MACHINEREF = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINEWORKING WHERE MACHINEWORKING.MACHINEREF = ?"))
         {
             pStatement.setString(1, machineref);
             ResultSet res = pStatement.executeQuery();

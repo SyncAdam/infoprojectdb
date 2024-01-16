@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.vaadin.base.devserver.DevServerOutputTracker.Result;
+import com.project.views.MainLayout;
 
 public class ManipOperations {
 
@@ -55,7 +55,7 @@ public class ManipOperations {
 
         int opTypeID = 0;
 
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM OPERATIONS WHERE OPERATIONS.ID = ?"))
         {
             pStatement.setInt(1, id);
             ResultSet res1 = pStatement.executeQuery();
@@ -64,7 +64,7 @@ public class ManipOperations {
             opTypeID = res1.getInt("IDTYPE");
         }
 
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM OPERATIONTYPE WHERE ID = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM OPERATIONTYPE WHERE ID = ?"))
         {
             pStatement.setInt(1, opTypeID);
             ResultSet res2 = pStatement.executeQuery();
