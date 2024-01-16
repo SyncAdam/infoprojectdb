@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.project.App;
 import com.project.ProductType;
 import com.project.views.MainLayout;
 import com.vaadin.flow.component.Html;
@@ -16,6 +15,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -112,7 +112,7 @@ public class ProductCatalogView extends HorizontalLayout{
                     try
                     {   
                         String serial = p.getReference() + "-" + serialGenerator(15);
-                        App.manipDB.myManipProducts.createProduct(p.getReference(), serial);
+                        MainLayout.manipDB.myManipProducts.createProduct(p.getReference(), serial);
                     }
                     catch(SQLException err)
                     {
@@ -147,7 +147,7 @@ public class ProductCatalogView extends HorizontalLayout{
     private ArrayList<ProductType> queryProductTypes() throws SQLException
     {
         ArrayList<ProductType> result = new ArrayList<>();
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM PRODUCT"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM PRODUCT"))
         {
             ResultSet res = pStatement.executeQuery();
 

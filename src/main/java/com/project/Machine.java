@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.project.views.MainLayout;
+
 public class Machine {
 
     public enum State
@@ -124,7 +126,7 @@ public class Machine {
     {
         String result = "";
 
-        try(PreparedStatement pStatement = App.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINE WHERE REF = ?"))
+        try(PreparedStatement pStatement = MainLayout.manipDB.myConnection.prepareStatement("SELECT * FROM MACHINE WHERE REF = ?"))
         {
             pStatement.setString(1, ref);
             ResultSet r = pStatement.executeQuery();

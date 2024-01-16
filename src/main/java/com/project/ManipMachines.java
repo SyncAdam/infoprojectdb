@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.views.MainLayout;
 
 public class ManipMachines {
 
@@ -33,9 +34,9 @@ public class ManipMachines {
     public static void createMachine(String reference, String model) throws SQLException
     {
         //disable autocommit to create a statement
-        App.manipDB.myConnection.setAutoCommit(false);
+        MainLayout.manipDB.myConnection.setAutoCommit(false);
 
-        try(PreparedStatement pstatement = App.manipDB.myConnection.prepareStatement(
+        try(PreparedStatement pstatement = MainLayout.manipDB.myConnection.prepareStatement(
             "INSERT INTO MACHINE "
                 + "(REF, MODEL, STATE) "
                 + "VALUES(?, ?, ?);"
@@ -51,7 +52,7 @@ public class ManipMachines {
         }
 
         //reenable autocommit after the statement is finished
-        App.manipDB.myConnection.setAutoCommit(true);
+        MainLayout.manipDB.myConnection.setAutoCommit(true);
     }
 
     /**
@@ -94,6 +95,10 @@ public class ManipMachines {
             pstatement.executeUpdate();
             System.out.println("Machine deleted");
         }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
 
         //reenable autocommit after the statement is finished
         this.myConnection.setAutoCommit(true);
@@ -121,7 +126,7 @@ public class ManipMachines {
             {
                 pStatement.setString(1, m.getTypeString());
                 pStatement.setInt(2, operations.get(i));
-                pStatement.setDouble(3, 20.0);
+                pStatement.setDouble(3, 5.0);
 
                 pStatement.executeUpdate();
             }
@@ -135,7 +140,7 @@ public class ManipMachines {
 
     public static void loadMachineState(String ref) throws SQLException
     {
-        try(PreparedStatement pstatement = App.manipDB.myConnection.prepareStatement(
+        try(PreparedStatement pstatement = MainLayout.manipDB.myConnection.prepareStatement(
         "INSERT INTO MACHINEWORKING "
             + "(MACHINEREF, SERIAL, IDOPERATION, TIME) "
             + "VALUES(?, ?, ?, ?);"
@@ -199,6 +204,7 @@ public class ManipMachines {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
+            //change for production version
             File resource = new File(System.getProperty("user.dir") + "\\src\\main\\resources\\META-INF\\resources\\machinecatalog\\machineType.json");
             result = Arrays.asList(objectMapper.readValue(resource, MachineType[].class));
         }

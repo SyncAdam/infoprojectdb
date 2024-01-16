@@ -9,7 +9,6 @@ import com.project.ManipMachines;
 import com.project.views.MainLayout;
 import com.project.views.products.ProductCatalogView;
 import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -63,7 +62,7 @@ public class MachineCatalogView extends HorizontalLayout{
         Image img = new Image(m.getPathToImage(), "product");
         img.setMaxWidth("50%");
 
-        Text description = new Text("Manufactured by: \n" + m.getManufacturer() + "\n" + m.getDescription());
+        Html description = new Html("<div>" + "Manufactured by: <br>" + m.getManufacturer() + "<br><br>" + m.getDescription());
         hL.add(img);
         hL.add(description);
         res.add(hL);
